@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOSEIN — Gestión de clientes</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&display=swap');
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'DM Sans',sans-serif;background:#f5f5f3;color:#1a1a1a;min-height:100vh;}
+  .topbar{background:#fff;border-bottom:1px solid #e8e8e4;padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:10;}
+  .logo{display:flex;align-items:center;gap:10px;}
+  .logo-dot{width:28px;height:28px;background:#1a6e3c;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+  .logo-dot svg{width:16px;height:16px;fill:none;stroke:#fff;stroke-width:2;}
+  .logo-name{font-size:15px;font-weight:500;letter-spacing:-0.3px;}
+  .logo-user{font-size:12px;color:#888;margin-left:8px;}
+  .nav{display:flex;gap:2px;}
+  .nav-btn{font-size:13px;padding:6px 14px;border:none;background:transparent;color:#666;cursor:pointer;border-radius:6px;font-family:'DM Sans',sans-serif;}
+  .nav-btn:hover{background:#f0f0ec;color:#1a1a1a;}
+  .nav-btn.active{background:#1a1a1a;color:#fff;}
+  .container{max-width:960px;margin:0 auto;padding:2rem 1.5rem;}
+  .section{display:none;}
+  .section.active{display:block;}
+  .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:1.5rem;}
+  .metric{background:#fff;border:1px solid #e8e8e4;border-radius:10px;padding:1rem 1.25rem;}
+  .metric-label{font-size:11px;color:#888;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;}
+  .metric-value{font-size:26px;font-weight:500;color:#1a1a1a;}
+  .metric-value.warn{color:#d97706;}
+  .metric-value.danger{color:#dc2626;}
+  .filters{display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap;}
+  .filters select{font-size:13px;padding:7px 12px;border-radius:8px;border:1px solid #e0e0da;background:#fff;color:#1a1a1a;font-family:'DM Sans',sans-serif;cursor:pointer;}
+  .card{background:#fff;border:1px solid #e8e8e4;border-radius:12px;overflow:hidden;margin-bottom:1.5rem;}
+  table{width:100%;border-collapse:collapse;font-size:13px;table-layout:fixed;}
+  th{background:#fafaf8;font-weight:500;font-size:11px;color:#888;text-transform:uppercase;letter-spacing:0.4px;padding:10px 14px;text-align:left;border-bottom:1px solid #e8e8e4;}
+  td{padding:11px 14px;border-bottom:1px solid #f0f0ec;color:#1a1a1a;vertical-align:middle;}
+  tr:last-child td{border-bottom:none;}
+  tr:hover td{background:#fafaf8;}
+  .badge{display:inline-block;font-size:11px;font-weight:500;padding:3px 9px;border-radius:99px;}
+  .badge-ok{background:#dcfce7;color:#166534;}
+  .badge-warn{background:#fef3c7;color:#92400e;}
+  .badge-danger{background:#fee2e2;color:#991b1b;}
+  .badge-info{background:#dbeafe;color:#1e40af;}
+  .badge-gray{background:#f0f0ec;color:#555;}
+  .badge-green{background:#dcfce7;color:#166534;}
+  .dias-ok{color:#16a34a;font-weight:500;}
+  .dias-warn{color:#d97706;font-weight:500;}
+  .dias-danger{color:#dc2626;font-weight:500;}
+  .section-title{font-size:16px;font-weight:500;margin-bottom:1rem;color:#1a1a1a;}
+  .form-card{background:#fff;border:1px solid #e8e8e4;border-radius:12px;padding:1.5rem;margin-bottom:1.5rem;}
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+  .form-grid.three{grid-template-columns:1fr 1fr 1fr;}
+  .field{display:flex;flex-direction:column;gap:5px;}
+  .field label{font-size:12px;color:#666;font-weight:500;}
+  .field input,.field select{font-size:13px;padding:8px 11px;border-radius:8px;border:1px solid #e0e0da;background:#fff;color:#1a1a1a;font-family:'DM Sans',sans-serif;}
+  .field input:focus,.field select:focus{outline:none;border-color:#1a6e3c;box-shadow:0 0 0 3px rgba(26,110,60,0.08);}
+  .btn-primary{font-size:13px;padding:9px 18px;border-radius:8px;border:none;background:#1a1a1a;color:#fff;cursor:pointer;font-weight:500;font-family:'DM Sans',sans-serif;}
+  .btn-primary:hover{background:#333;}
+  .btn-sm{font-size:12px;padding:5px 11px;border-radius:7px;border:1px solid #e0e0da;background:#fff;color:#1a1a1a;cursor:pointer;font-family:'DM Sans',sans-serif;}
+  .btn-sm:hover{background:#f5f5f3;}
+  .btn-danger-sm{font-size:12px;padding:5px 11px;border-radius:7px;border:1px solid #fca5a5;background:#fff;color:#dc2626;cursor:pointer;font-family:'DM Sans',sans-serif;}
+  .empty{text-align:center;padding:2.5rem;color:#aaa;font-size:13px;}
+  .success-msg{background:#dcfce7;color:#166534;font-size:13px;padding:10px 14px;border-radius:8px;margin-bottom:1rem;display:none;border:1px solid #bbf7d0;}
+  .items-list{border:1px solid #e8e8e4;border-radius:10px;margin-bottom:14px;overflow:hidden;}
+  .item-row{display:grid;grid-template-columns:1fr 80px 100px 36px;gap:8px;align-items:center;padding:9px 12px;border-bottom:1px solid #f0f0ec;}
+  .item-row:last-child{border-bottom:none;}
+  .item-row.header{background:#fafaf8;font-size:11px;color:#888;font-weight:500;text-transform:uppercase;letter-spacing:0.4px;}
+  .item-add{display:grid;grid-template-columns:1fr 80px 100px 36px;gap:8px;align-items:center;padding:9px 12px;background:#fafaf8;border-top:1px solid #e8e8e4;}
+  .item-add select,.item-add input{font-size:12px;padding:6px 9px;border-radius:7px;border:1px solid #e0e0da;background:#fff;color:#1a1a1a;font-family:'DM Sans',sans-serif;}
+  .btn-add-item{width:30px;height:30px;border-radius:7px;border:none;background:#1a1a1a;color:#fff;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;line-height:1;}
+  .btn-remove{width:30px;height:30px;border-radius:7px;border:1px solid #fca5a5;background:#fff;color:#dc2626;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;}
+  .items-empty{padding:14px;text-align:center;font-size:12px;color:#aaa;}
+  .retiro-items{font-size:12px;color:#555;}
+  @media(max-width:600px){
+    .metrics{grid-template-columns:1fr 1fr;}
+    .form-grid,.form-grid.three{grid-template-columns:1fr;}
+    .item-row,.item-add{grid-template-columns:1fr 70px 80px 30px;}
+    .container{padding:1rem;}
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">
+    <div class="logo-dot">
+      <svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="5"/><path d="M8 3v5l3 2" stroke-linecap="round"/></svg>
+    </div>
+    <span class="logo-name">SOSEIN</span>
+    <span class="logo-user">Roman Corral</span>
+  </div>
+  <div class="nav">
+    <button class="nav-btn active" onclick="showTab('panel',this)">Panel</button>
+    <button class="nav-btn" onclick="showTab('clientes',this)">Clientes</button>
+    <button class="nav-btn" onclick="showTab('retiros',this)">Retiros</button>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- PANEL -->
+  <div id="tab-panel" class="section active">
+    <div class="metrics">
+      <div class="metric"><div class="metric-label">Total clientes</div><div class="metric-value" id="m-total">0</div></div>
+      <div class="metric"><div class="metric-label">Al día</div><div class="metric-value" id="m-ok">0</div></div>
+      <div class="metric"><div class="metric-label">Por contactar</div><div class="metric-value warn" id="m-warn">0</div></div>
+      <div class="metric"><div class="metric-label">Urgente</div><div class="metric-value danger" id="m-danger">0</div></div>
+    </div>
+    <div class="filters">
+      <select id="f-zona" onchange="renderPanel()">
+        <option value="">Todas las zonas</option>
+        <option>Copiapó</option><option>La Serena</option><option>Coquimbo</option><option>Ovalle</option>
+      </select>
+      <select id="f-tipo" onchange="renderPanel()">
+        <option value="">Todos los tipos</option>
+        <option>Sólidos</option><option>Aceites</option><option>Mixto</option>
+      </select>
+      <select id="f-estado" onchange="renderPanel()">
+        <option value="">Todos los estados</option>
+        <option value="urgente">Urgente</option>
+        <option value="por contactar">Por contactar</option>
+        <option value="al día">Al día</option>
+      </select>
+    </div>
+    <div class="card">
+      <table>
+        <thead><tr>
+          <th style="width:26%;">Cliente</th>
+          <th style="width:13%;">Zona</th>
+          <th style="width:12%;">Tipo</th>
+          <th style="width:17%;">Último retiro</th>
+          <th style="width:14%;">Estado</th>
+          <th style="width:18%;">Acción</th>
+        </tr></thead>
+        <tbody id="panel-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- CLIENTES -->
+  <div id="tab-clientes" class="section">
+    <div class="section-title">Agregar cliente</div>
+    <div id="msg-cliente" class="success-msg">Cliente agregado correctamente.</div>
+    <div class="form-card">
+      <div class="form-grid">
+        <div class="field"><label>Nombre empresa</label><input id="c-nombre" type="text" placeholder="Ej: Minera del Valle"></div>
+        <div class="field"><label>RUT</label><input id="c-rut" type="text" placeholder="76.917.791-4"></div>
+      </div>
+      <div class="form-grid three">
+        <div class="field"><label>Zona</label>
+          <select id="c-zona"><option value="">Seleccionar</option><option>Copiapó</option><option>La Serena</option><option>Coquimbo</option><option>Ovalle</option></select>
+        </div>
+        <div class="field"><label>Tipo de residuo</label>
+          <select id="c-tipo"><option value="">Seleccionar</option><option>Sólidos</option><option>Aceites</option><option>Mixto</option></select>
+        </div>
+        <div class="field"><label>Unidad habitual</label>
+          <select id="c-unidad"><option value="">Seleccionar</option><option>Toneladas</option><option>Tambores</option><option>Pallets</option></select>
+        </div>
+      </div>
+      <div class="form-grid three">
+        <div class="field"><label>Contacto</label><input id="c-contacto" type="text" placeholder="Nombre contacto"></div>
+        <div class="field"><label>Email</label><input id="c-email" type="email" placeholder="email@empresa.cl"></div>
+        <div class="field"><label>Teléfono</label><input id="c-telefono" type="text" placeholder="+56 9 ..."></div>
+      </div>
+      <button class="btn-primary" onclick="agregarCliente()">Agregar cliente</button>
+    </div>
+
+    <div class="section-title">Clientes registrados</div>
+    <div class="card">
+      <table>
+        <thead><tr>
+          <th style="width:27%;">Nombre</th>
+          <th style="width:13%;">Zona</th>
+          <th style="width:12%;">Tipo</th>
+          <th style="width:24%;">Contacto</th>
+          <th style="width:24%;">Acciones</th>
+        </tr></thead>
+        <tbody id="clientes-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- RETIROS -->
+  <div id="tab-retiros" class="section">
+    <div class="section-title">Registrar retiro</div>
+    <div id="msg-retiro" class="success-msg">Retiro registrado correctamente.</div>
+    <div class="form-card">
+      <div class="form-grid">
+        <div class="field"><label>Cliente</label>
+          <select id="r-cliente" onchange="actualizarDestino()"><option value="">Seleccionar cliente</option></select>
+        </div>
+        <div class="field"><label>Fecha del retiro</label><input id="r-fecha" type="date"></div>
+      </div>
+      <div class="form-grid">
+        <div class="field"><label>Destino</label>
+          <select id="r-destino"><option value="">Seleccionar</option><option>Recycling</option><option>Confinor</option><option>Crowan</option><option>Otro</option></select>
+        </div>
+        <div class="field"><label>Notas (opcional)</label><input id="r-notas" type="text" placeholder="Observaciones"></div>
+      </div>
+
+      <div style="font-size:13px;font-weight:500;margin-bottom:8px;">Residuos del retiro</div>
+      <div class="items-list">
+        <div class="item-row header">
+          <span>Tipo de residuo</span><span>Cantidad</span><span>Unidad</span><span></span>
+        </div>
+        <div id="items-body"><div class="items-empty">Agrega al menos un residuo</div></div>
+        <div class="item-add">
+          <select id="new-tipo">
+            <option value="">Tipo de residuo...</option>
+            <option>Filtros de aceite</option>
+            <option>Filtros de aire</option>
+            <option>EPP contaminado</option>
+            <option>Trapos y guaipes</option>
+            <option>Sólidos con HC</option>
+            <option>Chatarra electrónica</option>
+            <option>Tambores vacíos</option>
+            <option>Tierra impregnada</option>
+            <option>Mangueras hidráulicas</option>
+            <option>Aceites usados</option>
+            <option>Lubricantes usados</option>
+            <option>Otro</option>
+          </select>
+          <input id="new-cantidad" type="number" placeholder="0" min="0" step="0.1">
+          <select id="new-unidad"><option>Tambores</option><option>Toneladas</option><option>Pallets</option><option>Unidades</option></select>
+          <button class="btn-add-item" onclick="agregarItem()" title="Agregar">+</button>
+        </div>
+      </div>
+      <button class="btn-primary" onclick="guardarRetiro()">Guardar retiro</button>
+    </div>
+
+    <div class="section-title">Últimos retiros</div>
+    <div class="card">
+      <table>
+        <thead><tr>
+          <th style="width:22%;">Cliente</th>
+          <th style="width:11%;">Fecha</th>
+          <th style="width:37%;">Residuos</th>
+          <th style="width:13%;">Destino</th>
+          <th style="width:17%;">Notas</th>
+        </tr></thead>
+        <tbody id="retiros-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<script>
+let clientes = JSON.parse(localStorage.getItem('sosein_clientes') || '[]');
+let retiros = JSON.parse(localStorage.getItem('sosein_retiros') || '[]');
+let nextId = parseInt(localStorage.getItem('sosein_nextId') || '1');
+let nextRetiroId = parseInt(localStorage.getItem('sosein_nextRetiroId') || '1');
+let itemsActuales = [];
+
+function save() {
+  localStorage.setItem('sosein_clientes', JSON.stringify(clientes));
+  localStorage.setItem('sosein_retiros', JSON.stringify(retiros));
+  localStorage.setItem('sosein_nextId', nextId);
+  localStorage.setItem('sosein_nextRetiroId', nextRetiroId);
+}
+
+function diasDesdeUltimoRetiro(cId) {
+  const r = retiros.filter(x => x.clienteId === cId);
+  if (!r.length) return 999;
+  const ultima = r.map(x => new Date(x.fecha)).sort((a,b) => b-a)[0];
+  return Math.round((new Date() - ultima) / 86400000);
+}
+function estadoDias(d) { return d > 60 ? "urgente" : d > 30 ? "por contactar" : "al día"; }
+function badgeEstado(d) {
+  const e = estadoDias(d);
+  if (e === "urgente") return `<span class="badge badge-danger">Urgente</span>`;
+  if (e === "por contactar") return `<span class="badge badge-warn">Por contactar</span>`;
+  return `<span class="badge badge-ok">Al día</span>`;
+}
+function diasClass(d) { return d > 60 ? "dias-danger" : d > 30 ? "dias-warn" : "dias-ok"; }
+function tipoBadge(t) { return t === "Aceites" ? `<span class="badge badge-info">${t}</span>` : `<span class="badge badge-gray">${t}</span>`; }
+
+function showTab(tab, btn) {
+  document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
+  document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
+  document.getElementById("tab-" + tab).classList.add("active");
+  if (btn) btn.classList.add("active");
+  if (tab === "panel") renderPanel();
+  if (tab === "clientes") renderClientes();
+  if (tab === "retiros") renderRetiros();
+}
+
+function renderPanel() {
+  const zona = document.getElementById("f-zona").value;
+  const tipo = document.getElementById("f-tipo").value;
+  const estado = document.getElementById("f-estado").value;
+  let filtered = clientes.filter(c => {
+    if (zona && c.zona !== zona) return false;
+    if (tipo && c.tipo !== tipo) return false;
+    const d = diasDesdeUltimoRetiro(c.id);
+    if (estado && estadoDias(d) !== estado) return false;
+    return true;
+  }).map(c => ({...c, dias: diasDesdeUltimoRetiro(c.id)})).sort((a,b) => b.dias - a.dias);
+  document.getElementById("m-total").textContent = filtered.length;
+  document.getElementById("m-ok").textContent = filtered.filter(c => estadoDias(c.dias) === "al día").length;
+  document.getElementById("m-warn").textContent = filtered.filter(c => estadoDias(c.dias) === "por contactar").length;
+  document.getElementById("m-danger").textContent = filtered.filter(c => estadoDias(c.dias) === "urgente").length;
+  const tbody = document.getElementById("panel-tbody");
+  if (!filtered.length) { tbody.innerHTML = `<tr><td colspan="6" class="empty">Sin clientes registrados aún</td></tr>`; return; }
+  tbody.innerHTML = filtered.map(c => `
+    <tr>
+      <td style="font-weight:500;">${c.nombre}</td>
+      <td style="font-size:12px;color:#666;">${c.zona}</td>
+      <td>${tipoBadge(c.tipo)}</td>
+      <td><span class="${diasClass(c.dias)}">${c.dias === 999 ? "Sin retiros" : c.dias + "d atrás"}</span></td>
+      <td>${badgeEstado(c.dias)}</td>
+      <td><button class="btn-sm" onclick="irARetiro(${c.id})">+ Registrar retiro</button></td>
+    </tr>
+  `).join("");
+}
+
+function renderClientes() {
+  actualizarSelectClientes();
+  const tbody = document.getElementById("clientes-tbody");
+  if (!clientes.length) { tbody.innerHTML = `<tr><td colspan="5" class="empty">Sin clientes registrados aún</td></tr>`; return; }
+  tbody.innerHTML = clientes.map(c => `
+    <tr>
+      <td><div style="font-weight:500;">${c.nombre}</div><div style="font-size:11px;color:#888;">${c.rut || ''}</div></td>
+      <td style="font-size:12px;">${c.zona}</td>
+      <td>${tipoBadge(c.tipo)}</td>
+      <td><div style="font-size:12px;">${c.contacto || '—'}</div><div style="font-size:11px;color:#888;">${c.email || ''}</div></td>
+      <td>
+        <button class="btn-sm" onclick="irARetiro(${c.id})">+ Retiro</button>
+        <button class="btn-danger-sm" style="margin-left:4px;" onclick="eliminarCliente(${c.id})">Eliminar</button>
+      </td>
+    </tr>
+  `).join("");
+}
+
+function renderRetiros() {
+  actualizarSelectClientes();
+  itemsActuales = [];
+  renderItemsActuales();
+  const today = new Date().toISOString().split("T")[0];
+  document.getElementById("r-fecha").value = today;
+  const tbody = document.getElementById("retiros-tbody");
+  const sorted = [...retiros].sort((a,b) => new Date(b.fecha) - new Date(a.fecha));
+  if (!sorted.length) { tbody.innerHTML = `<tr><td colspan="5" class="empty">Sin retiros registrados aún</td></tr>`; return; }
+  tbody.innerHTML = sorted.map(r => {
+    const c = clientes.find(x => x.id === r.clienteId);
+    const itemsStr = r.items.map(i => `${i.tipo} (${i.cantidad} ${i.unidad})`).join(" · ");
+    return `<tr>
+      <td style="font-weight:500;">${c ? c.nombre : "—"}</td>
+      <td style="font-size:12px;">${r.fecha}</td>
+      <td class="retiro-items">${itemsStr}</td>
+      <td><span class="badge badge-gray">${r.destino}</span></td>
+      <td style="font-size:12px;color:#666;">${r.notas || "—"}</td>
+    </tr>`;
+  }).join("");
+}
+
+function renderItemsActuales() {
+  const body = document.getElementById("items-body");
+  if (!itemsActuales.length) { body.innerHTML = `<div class="items-empty">Agrega al menos un residuo</div>`; return; }
+  body.innerHTML = itemsActuales.map((item, i) => `
+    <div class="item-row">
+      <span style="font-size:13px;">${item.tipo}</span>
+      <span style="font-size:13px;">${item.cantidad}</span>
+      <span style="font-size:12px;color:#666;">${item.unidad}</span>
+      <button class="btn-remove" onclick="eliminarItem(${i})" title="Eliminar">×</button>
+    </div>
+  `).join("");
+}
+
+function agregarItem() {
+  const tipo = document.getElementById("new-tipo").value;
+  const cantidad = parseFloat(document.getElementById("new-cantidad").value);
+  const unidad = document.getElementById("new-unidad").value;
+  if (!tipo || !cantidad || cantidad <= 0) { alert("Selecciona tipo y cantidad."); return; }
+  itemsActuales.push({tipo, cantidad, unidad});
+  document.getElementById("new-tipo").value = "";
+  document.getElementById("new-cantidad").value = "";
+  renderItemsActuales();
+}
+
+function eliminarItem(i) { itemsActuales.splice(i, 1); renderItemsActuales(); }
+
+function actualizarSelectClientes() {
+  const sel = document.getElementById("r-cliente");
+  const current = sel.value;
+  sel.innerHTML = `<option value="">Seleccionar cliente</option>` + clientes.map(c =>
+    `<option value="${c.id}"${c.id == current ? " selected" : ""}>${c.nombre} (${c.zona})</option>`
+  ).join("");
+}
+
+function actualizarDestino() {
+  const cId = parseInt(document.getElementById("r-cliente").value);
+  const c = clientes.find(x => x.id === cId);
+  const sel = document.getElementById("r-destino");
+  if (c && c.tipo === "Aceites") sel.value = "Crowan";
+  else if (c && c.zona === "Copiapó") sel.value = "Confinor";
+  else if (c) sel.value = "Recycling";
+}
+
+function agregarCliente() {
+  const nombre = document.getElementById("c-nombre").value.trim();
+  const rut = document.getElementById("c-rut").value.trim();
+  const zona = document.getElementById("c-zona").value;
+  const tipo = document.getElementById("c-tipo").value;
+  const unidad = document.getElementById("c-unidad").value;
+  const contacto = document.getElementById("c-contacto").value.trim();
+  const email = document.getElementById("c-email").value.trim();
+  const telefono = document.getElementById("c-telefono").value.trim();
+  if (!nombre || !zona || !tipo) { alert("Completa nombre, zona y tipo de residuo."); return; }
+  clientes.push({id: nextId++, nombre, rut, zona, tipo, unidad, contacto, email, telefono});
+  save();
+  ["c-nombre","c-rut","c-contacto","c-email","c-telefono"].forEach(id => document.getElementById(id).value = "");
+  ["c-zona","c-tipo","c-unidad"].forEach(id => document.getElementById(id).value = "");
+  const msg = document.getElementById("msg-cliente");
+  msg.style.display = "block";
+  setTimeout(() => msg.style.display = "none", 2500);
+  renderClientes();
+  renderPanel();
+}
+
+function eliminarCliente(id) {
+  if (!confirm("¿Eliminar este cliente?")) return;
+  clientes = clientes.filter(c => c.id !== id);
+  save();
+  renderClientes();
+  renderPanel();
+}
+
+function irARetiro(clienteId) {
+  document.querySelectorAll(".nav-btn")[2].click();
+  showTab("retiros", document.querySelectorAll(".nav-btn")[2]);
+  setTimeout(() => {
+    document.getElementById("r-cliente").value = clienteId;
+    actualizarDestino();
+  }, 50);
+}
+
+function guardarRetiro() {
+  const clienteId = parseInt(document.getElementById("r-cliente").value);
+  const fecha = document.getElementById("r-fecha").value;
+  const destino = document.getElementById("r-destino").value;
+  const notas = document.getElementById("r-notas").value.trim();
+  if (!clienteId || !fecha || !destino) { alert("Selecciona cliente, fecha y destino."); return; }
+  if (!itemsActuales.length) { alert("Agrega al menos un residuo al retiro."); return; }
+  retiros.push({id: nextRetiroId++, clienteId, fecha, items: [...itemsActuales], destino, notas});
+  save();
+  itemsActuales = [];
+  renderItemsActuales();
+  document.getElementById("r-cliente").value = "";
+  document.getElementById("r-destino").value = "";
+  document.getElementById("r-notas").value = "";
+  const msg = document.getElementById("msg-retiro");
+  msg.style.display = "block";
+  setTimeout(() => msg.style.display = "none", 2500);
+  renderRetiros();
+  renderPanel();
+}
+
+renderPanel();
+</script>
+</body>
+</html>
