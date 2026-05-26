@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SOSEIN — Gestión de clientes</title>
+<title>SOSEIN — Gestión</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&display=swap');
   *{box-sizing:border-box;margin:0;padding:0;}
@@ -13,14 +13,18 @@
   .logo-dot{width:28px;height:28px;background:#1a6e3c;border-radius:50%;display:flex;align-items:center;justify-content:center;}
   .logo-name{font-size:15px;font-weight:500;letter-spacing:-0.3px;}
   .logo-user{font-size:12px;color:#888;margin-left:8px;}
-  .nav{display:flex;gap:2px;}
+  .nav{display:flex;gap:2px;align-items:center;}
   .nav-btn{font-size:13px;padding:6px 14px;border:none;background:transparent;color:#666;cursor:pointer;border-radius:6px;font-family:'DM Sans',sans-serif;}
   .nav-btn:hover{background:#f0f0ec;color:#1a1a1a;}
   .nav-btn.active{background:#1a1a1a;color:#fff;}
+  .nav-btn.flota{color:#1a6e3c;}
+  .nav-btn.flota.active{background:#1a6e3c;color:#fff;}
+  .nav-divider{width:1px;height:20px;background:#e0e0da;margin:0 4px;}
   .container{max-width:960px;margin:0 auto;padding:2rem 1.5rem;}
   .section{display:none;}
   .section.active{display:block;}
   .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:1.5rem;}
+  .metrics-3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:1.5rem;}
   .metric{background:#fff;border:1px solid #e8e8e4;border-radius:10px;padding:1rem 1.25rem;}
   .metric-label{font-size:11px;color:#888;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;}
   .metric-value{font-size:26px;font-weight:500;color:#1a1a1a;}
@@ -29,6 +33,8 @@
   .filters{display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap;}
   .filters select{font-size:13px;padding:7px 12px;border-radius:8px;border:1px solid #e0e0da;background:#fff;color:#1a1a1a;font-family:'DM Sans',sans-serif;cursor:pointer;}
   .card{background:#fff;border:1px solid #e8e8e4;border-radius:12px;overflow:hidden;margin-bottom:1.5rem;}
+  .card.urgente{border-color:#fca5a5;}
+  .card.proximo{border-color:#fcd34d;}
   table{width:100%;border-collapse:collapse;font-size:13px;table-layout:fixed;}
   th{background:#fafaf8;font-weight:500;font-size:11px;color:#888;text-transform:uppercase;letter-spacing:0.4px;padding:10px 14px;text-align:left;border-bottom:1px solid #e8e8e4;}
   td{padding:11px 14px;border-bottom:1px solid #f0f0ec;color:#1a1a1a;vertical-align:middle;}
@@ -40,6 +46,7 @@
   .badge-danger{background:#fee2e2;color:#991b1b;}
   .badge-info{background:#dbeafe;color:#1e40af;}
   .badge-gray{background:#f0f0ec;color:#555;}
+  .badge-green{background:#dcfce7;color:#166534;}
   .dias-ok{color:#16a34a;font-weight:500;}
   .dias-warn{color:#d97706;font-weight:500;}
   .dias-danger{color:#dc2626;font-weight:500;}
@@ -54,6 +61,9 @@
   .btn-primary{font-size:13px;padding:9px 18px;border-radius:8px;border:none;background:#1a1a1a;color:#fff;cursor:pointer;font-weight:500;font-family:'DM Sans',sans-serif;}
   .btn-primary:hover{background:#333;}
   .btn-primary:disabled{opacity:0.5;cursor:not-allowed;}
+  .btn-green{font-size:13px;padding:9px 18px;border-radius:8px;border:none;background:#1a6e3c;color:#fff;cursor:pointer;font-weight:500;font-family:'DM Sans',sans-serif;}
+  .btn-green:hover{background:#155c32;}
+  .btn-green:disabled{opacity:0.5;cursor:not-allowed;}
   .btn-sm{font-size:12px;padding:5px 11px;border-radius:7px;border:1px solid #e0e0da;background:#fff;color:#1a1a1a;cursor:pointer;font-family:'DM Sans',sans-serif;}
   .btn-sm:hover{background:#f5f5f3;}
   .btn-danger-sm{font-size:12px;padding:5px 11px;border-radius:7px;border:1px solid #fca5a5;background:#fff;color:#dc2626;cursor:pointer;font-family:'DM Sans',sans-serif;}
@@ -73,12 +83,41 @@
   .retiro-items{font-size:12px;color:#555;}
   .spinner{display:inline-block;width:14px;height:14px;border:2px solid #fff;border-top-color:transparent;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:6px;}
   @keyframes spin{to{transform:rotate(360deg);}}
+  .fleet-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px;margin-bottom:1.5rem;}
+  .truck-card{background:#fff;border:1px solid #e8e8e4;border-radius:12px;padding:1rem 1.25rem;}
+  .truck-card.urgente{border-color:#fca5a5;}
+  .truck-card.proximo{border-color:#fcd34d;}
+  .truck-header{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+  .truck-icon{width:36px;height:36px;border-radius:8px;background:#f0f0ec;display:flex;align-items:center;justify-content:center;font-size:18px;}
+  .truck-patente{font-size:15px;font-weight:500;}
+  .truck-modelo{font-size:12px;color:#888;}
+  .progress-wrap{margin:10px 0 6px;}
+  .progress-label{display:flex;justify-content:space-between;font-size:11px;color:#888;margin-bottom:5px;}
+  .progress-bar{height:6px;background:#f0f0ec;border-radius:99px;overflow:hidden;}
+  .progress-fill{height:100%;border-radius:99px;}
+  .fill-ok{background:#16a34a;}
+  .fill-warn{background:#d97706;}
+  .fill-danger{background:#dc2626;}
+  .truck-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px;}
+  .stat{background:#f5f5f3;border-radius:8px;padding:8px 10px;}
+  .stat-label{font-size:11px;color:#888;margin-bottom:2px;}
+  .stat-value{font-size:13px;font-weight:500;}
+  .btn-update{width:100%;margin-top:12px;font-size:12px;padding:7px;border-radius:8px;border:1px solid #e0e0da;background:#fff;color:#1a1a1a;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;font-family:'DM Sans',sans-serif;}
+  .btn-update:hover{background:#f5f5f3;}
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.3);display:none;align-items:center;justify-content:center;z-index:100;}
+  .modal-overlay.open{display:flex;}
+  .modal{background:#fff;border-radius:12px;border:1px solid #e8e8e4;padding:1.25rem;width:320px;max-width:90vw;}
+  .modal-title{font-size:15px;font-weight:500;margin-bottom:1rem;}
+  .modal-btns{display:flex;gap:8px;margin-top:12px;}
+  .btn-modal-cancel{flex:1;font-size:13px;padding:8px;border-radius:8px;border:1px solid #e0e0da;background:#fff;color:#1a1a1a;cursor:pointer;font-family:'DM Sans',sans-serif;}
+  .btn-modal-ok{flex:1;font-size:13px;padding:8px;border-radius:8px;border:none;background:#1a6e3c;color:#fff;cursor:pointer;font-weight:500;font-family:'DM Sans',sans-serif;}
   @media(max-width:600px){
-    .metrics{grid-template-columns:1fr 1fr;}
+    .metrics,.metrics-3{grid-template-columns:1fr 1fr;}
     .form-grid,.form-grid.three{grid-template-columns:1fr;}
     .item-row,.item-add{grid-template-columns:1fr 70px 80px 30px;}
     .container{padding:1rem;}
     .topbar{padding:0 1rem;}
+    .logo-user{display:none;}
   }
 </style>
 </head>
@@ -96,6 +135,8 @@
     <button class="nav-btn active" onclick="showTab('panel',this)">Panel</button>
     <button class="nav-btn" onclick="showTab('clientes',this)">Clientes</button>
     <button class="nav-btn" onclick="showTab('retiros',this)">Retiros</button>
+    <div class="nav-divider"></div>
+    <button class="nav-btn flota" onclick="showTab('flota',this)">🚛 Flota</button>
   </div>
 </div>
 
@@ -140,15 +181,9 @@
         <div class="field"><label>RUT</label><input id="c-rut" type="text" placeholder="76.917.791-4"></div>
       </div>
       <div class="form-grid three">
-        <div class="field"><label>Zona</label>
-          <select id="c-zona"><option value="">Seleccionar</option><option>Copiapó</option><option>La Serena</option><option>Coquimbo</option><option>Ovalle</option></select>
-        </div>
-        <div class="field"><label>Tipo de residuo</label>
-          <select id="c-tipo"><option value="">Seleccionar</option><option>Sólidos</option><option>Aceites</option><option>Mixto</option></select>
-        </div>
-        <div class="field"><label>Unidad habitual</label>
-          <select id="c-unidad"><option value="">Seleccionar</option><option>Toneladas</option><option>Tambores</option><option>Pallets</option></select>
-        </div>
+        <div class="field"><label>Zona</label><select id="c-zona"><option value="">Seleccionar</option><option>Copiapó</option><option>La Serena</option><option>Coquimbo</option><option>Ovalle</option></select></div>
+        <div class="field"><label>Tipo de residuo</label><select id="c-tipo"><option value="">Seleccionar</option><option>Sólidos</option><option>Aceites</option><option>Mixto</option></select></div>
+        <div class="field"><label>Unidad habitual</label><select id="c-unidad"><option value="">Seleccionar</option><option>Toneladas</option><option>Tambores</option><option>Pallets</option></select></div>
       </div>
       <div class="form-grid three">
         <div class="field"><label>Contacto</label><input id="c-contacto" type="text" placeholder="Nombre contacto"></div>
@@ -161,11 +196,7 @@
     <div class="card">
       <table>
         <thead><tr>
-          <th style="width:27%;">Nombre</th>
-          <th style="width:13%;">Zona</th>
-          <th style="width:12%;">Tipo</th>
-          <th style="width:24%;">Contacto</th>
-          <th style="width:24%;">Acciones</th>
+          <th style="width:27%;">Nombre</th><th style="width:13%;">Zona</th><th style="width:12%;">Tipo</th><th style="width:24%;">Contacto</th><th style="width:24%;">Acciones</th>
         </tr></thead>
         <tbody id="clientes-tbody"><tr><td colspan="5" class="loading">Cargando...</td></tr></tbody>
       </table>
@@ -179,39 +210,19 @@
     <div id="err-retiro" class="error-msg">Error al guardar. Intenta de nuevo.</div>
     <div class="form-card">
       <div class="form-grid">
-        <div class="field"><label>Cliente</label>
-          <select id="r-cliente" onchange="actualizarDestino()"><option value="">Seleccionar cliente</option></select>
-        </div>
+        <div class="field"><label>Cliente</label><select id="r-cliente" onchange="actualizarDestino()"><option value="">Seleccionar cliente</option></select></div>
         <div class="field"><label>Fecha del retiro</label><input id="r-fecha" type="date"></div>
       </div>
       <div class="form-grid">
-        <div class="field"><label>Destino</label>
-          <select id="r-destino"><option value="">Seleccionar</option><option>Recycling</option><option>Confinor</option><option>Crowan</option><option>Otro</option></select>
-        </div>
+        <div class="field"><label>Destino</label><select id="r-destino"><option value="">Seleccionar</option><option>Recycling</option><option>Confinor</option><option>Crowan</option><option>Otro</option></select></div>
         <div class="field"><label>Notas (opcional)</label><input id="r-notas" type="text" placeholder="Observaciones"></div>
       </div>
       <div style="font-size:13px;font-weight:500;margin-bottom:8px;">Residuos del retiro</div>
       <div class="items-list">
-        <div class="item-row header">
-          <span>Tipo de residuo</span><span>Cantidad</span><span>Unidad</span><span></span>
-        </div>
+        <div class="item-row header"><span>Tipo de residuo</span><span>Cantidad</span><span>Unidad</span><span></span></div>
         <div id="items-body"><div class="items-empty">Agrega al menos un residuo</div></div>
         <div class="item-add">
-          <select id="new-tipo">
-            <option value="">Tipo de residuo...</option>
-            <option>Filtros de aceite</option>
-            <option>Filtros de aire</option>
-            <option>EPP contaminado</option>
-            <option>Trapos y guaipes</option>
-            <option>Sólidos con HC</option>
-            <option>Chatarra electrónica</option>
-            <option>Tambores vacíos</option>
-            <option>Tierra impregnada</option>
-            <option>Mangueras hidráulicas</option>
-            <option>Aceites usados</option>
-            <option>Lubricantes usados</option>
-            <option>Otro</option>
-          </select>
+          <select id="new-tipo"><option value="">Tipo de residuo...</option><option>Filtros de aceite</option><option>Filtros de aire</option><option>EPP contaminado</option><option>Trapos y guaipes</option><option>Sólidos con HC</option><option>Chatarra electrónica</option><option>Tambores vacíos</option><option>Tierra impregnada</option><option>Mangueras hidráulicas</option><option>Aceites usados</option><option>Lubricantes usados</option><option>Otro</option></select>
           <input id="new-cantidad" type="number" placeholder="0" min="0" step="0.1">
           <select id="new-unidad"><option>Tambores</option><option>Toneladas</option><option>Pallets</option><option>Unidades</option></select>
           <button class="btn-add-item" onclick="agregarItem()" title="Agregar">+</button>
@@ -223,51 +234,96 @@
     <div class="card">
       <table>
         <thead><tr>
-          <th style="width:22%;">Cliente</th>
-          <th style="width:11%;">Fecha</th>
-          <th style="width:37%;">Residuos</th>
-          <th style="width:13%;">Destino</th>
-          <th style="width:17%;">Notas</th>
+          <th style="width:22%;">Cliente</th><th style="width:11%;">Fecha</th><th style="width:37%;">Residuos</th><th style="width:13%;">Destino</th><th style="width:17%;">Notas</th>
         </tr></thead>
         <tbody id="retiros-tbody"><tr><td colspan="5" class="loading">Cargando...</td></tr></tbody>
       </table>
     </div>
   </div>
 
+  <!-- FLOTA -->
+  <div id="tab-flota" class="section">
+    <div class="metrics-3">
+      <div class="metric"><div class="metric-label">Camiones en flota</div><div class="metric-value" id="f-total">—</div></div>
+      <div class="metric"><div class="metric-label">Próximos a mantención</div><div class="metric-value warn" id="f-warn">—</div></div>
+      <div class="metric"><div class="metric-label">Mantención urgente</div><div class="metric-value danger" id="f-danger">—</div></div>
+    </div>
+    <div class="section-title">Estado de flota</div>
+    <div class="fleet-grid" id="fleet-grid"></div>
+
+    <div class="section-title">Agregar camión</div>
+    <div id="msg-camion" class="success-msg">Camión agregado correctamente.</div>
+    <div id="err-camion" class="error-msg">Error al guardar. Intenta de nuevo.</div>
+    <div class="form-card">
+      <div class="form-grid three">
+        <div class="field"><label>Patente</label><input id="cam-patente" type="text" placeholder="Ej: SLHT42"></div>
+        <div class="field"><label>Marca</label><input id="cam-marca" type="text" placeholder="Ej: Chevrolet"></div>
+        <div class="field"><label>Modelo</label><input id="cam-modelo" type="text" placeholder="Ej: FVR 1724"></div>
+      </div>
+      <div class="form-grid three">
+        <div class="field"><label>Año</label><input id="cam-año" type="number" placeholder="2023"></div>
+        <div class="field"><label>Uso</label><select id="cam-uso"><option value="">Seleccionar</option><option>Sólidos grande</option><option>Sólidos chico</option><option>Aceite</option></select></div>
+        <div class="field"><label>Intervalo mantención (km)</label><input id="cam-intervalo" type="number" placeholder="10000"></div>
+      </div>
+      <div class="form-grid">
+        <div class="field"><label>Km actuales</label><input id="cam-km" type="number" placeholder="Ej: 15914"></div>
+        <div class="field"><label>Km próxima mantención</label><input id="cam-proxima" type="number" placeholder="Ej: 20000"></div>
+      </div>
+      <button class="btn-green" id="btn-agregar-camion" onclick="agregarCamion()">Agregar camión</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- MODAL ODÓMETRO -->
+<div class="modal-overlay" id="modal-km">
+  <div class="modal">
+    <div class="modal-title" id="modal-km-title">Actualizar odómetro</div>
+    <div class="field" style="margin-bottom:10px;"><label>Kilómetros actuales</label><input id="modal-km-input" type="number" placeholder="Ej: 126.500"></div>
+    <div class="field" style="margin-bottom:0;"><label>¿Se hizo mantención hoy?</label>
+      <select id="modal-mantencion" style="font-size:13px;padding:8px 11px;border-radius:8px;border:1px solid #e0e0da;background:#fff;color:#1a1a1a;font-family:'DM Sans',sans-serif;">
+        <option value="no">No, solo actualizo km</option>
+        <option value="si">Sí, se hizo mantención hoy</option>
+      </select>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-modal-cancel" onclick="cerrarModal()">Cancelar</button>
+      <button class="btn-modal-ok" onclick="guardarKm()">Guardar</button>
+    </div>
+  </div>
 </div>
 
 <script>
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzuSnR2OkpErHLA2CTIiI_O47tCeCdWdthNlf4c7fxp6ApTa5vJ9adG8uOecLX2hHT0YQ/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzqeI2oSvDp-nzRZFCyDGznVBJ_ILR8vmadR9zZA0DdAtFbrwkpzDzVjZh4pxq-OPXU/exec';
 
-let clientes = [];
-let retiros = [];
-let itemsActuales = [];
-let nextId = 1;
-let nextRetiroId = 1;
+let clientes = [], retiros = [], camiones = [];
+let nextId = 1, nextRetiroId = 1, nextCamionId = 1;
+let itemsActuales = [], camionSeleccionado = null;
+
+const hoy = new Date().toISOString().split('T')[0];
 
 async function apiGet(action) {
   const res = await fetch(`${SCRIPT_URL}?action=${action}`);
   return res.json();
 }
-
 async function apiPost(data) {
-  const res = await fetch(SCRIPT_URL, {
-    method: 'POST',
-    body: JSON.stringify(data)
-  });
+  const res = await fetch(SCRIPT_URL, {method:'POST', body:JSON.stringify(data)});
   return res.json();
 }
 
 async function cargarDatos() {
   try {
-    const [c, r] = await Promise.all([apiGet('getClientes'), apiGet('getRetiros')]);
+    const [c, r, cam] = await Promise.all([apiGet('getClientes'), apiGet('getRetiros'), apiGet('getCamiones')]);
     clientes = c.filter(x => x.id);
     retiros = r.filter(x => x.id);
-    if (clientes.length) nextId = Math.max(...clientes.map(x => parseInt(x.id))) + 1;
-    if (retiros.length) nextRetiroId = Math.max(...retiros.map(x => parseInt(x.id))) + 1;
+    camiones = Array.isArray(cam) ? cam.filter(x => x.id) : [];
+    if (clientes.length) nextId = Math.max(...clientes.map(x => parseInt(x.id)||0)) + 1;
+    if (retiros.length) nextRetiroId = Math.max(...retiros.map(x => parseInt(x.id)||0)) + 1;
+    if (camiones.length) nextCamionId = Math.max(...camiones.map(x => parseInt(x.id)||0)) + 1;
     renderPanel();
+    renderFlota();
   } catch(e) {
-    document.getElementById('panel-tbody').innerHTML = `<tr><td colspan="6" class="empty">Error al cargar datos. Verifica tu conexión.</td></tr>`;
+    document.getElementById('panel-tbody').innerHTML = `<tr><td colspan="6" class="empty">Error al cargar datos.</td></tr>`;
   }
 }
 
@@ -295,6 +351,7 @@ function showTab(tab, btn) {
   if (tab === "panel") renderPanel();
   if (tab === "clientes") renderClientes();
   if (tab === "retiros") renderRetiros();
+  if (tab === "flota") renderFlota();
 }
 
 function renderPanel() {
@@ -332,10 +389,10 @@ function renderClientes() {
   if (!clientes.length) { tbody.innerHTML = `<tr><td colspan="5" class="empty">Sin clientes registrados aún</td></tr>`; return; }
   tbody.innerHTML = clientes.map(c => `
     <tr>
-      <td><div style="font-weight:500;">${c.nombre}</div><div style="font-size:11px;color:#888;">${c.rut || ''}</div></td>
+      <td><div style="font-weight:500;">${c.nombre}</div><div style="font-size:11px;color:#888;">${c.rut||''}</div></td>
       <td style="font-size:12px;">${c.zona}</td>
       <td>${tipoBadge(c.tipo)}</td>
-      <td><div style="font-size:12px;">${c.contacto || '—'}</div><div style="font-size:11px;color:#888;">${c.email || ''}</div></td>
+      <td><div style="font-size:12px;">${c.contacto||'—'}</div><div style="font-size:11px;color:#888;">${c.email||''}</div></td>
       <td>
         <button class="btn-sm" onclick="irARetiro(${c.id})">+ Retiro</button>
         <button class="btn-danger-sm" style="margin-left:4px;" onclick="eliminarCliente(${c.id})">Eliminar</button>
@@ -348,8 +405,7 @@ function renderRetiros() {
   actualizarSelectClientes();
   itemsActuales = [];
   renderItemsActuales();
-  const today = new Date().toISOString().split("T")[0];
-  document.getElementById("r-fecha").value = today;
+  document.getElementById("r-fecha").value = hoy;
   const tbody = document.getElementById("retiros-tbody");
   const sorted = [...retiros].sort((a,b) => new Date(b.fecha) - new Date(a.fecha));
   if (!sorted.length) { tbody.innerHTML = `<tr><td colspan="5" class="empty">Sin retiros registrados aún</td></tr>`; return; }
@@ -362,7 +418,7 @@ function renderRetiros() {
       <td style="font-size:12px;">${r.fecha}</td>
       <td class="retiro-items">${itemsStr}</td>
       <td><span class="badge badge-gray">${r.destino}</span></td>
-      <td style="font-size:12px;color:#666;">${r.notas || "—"}</td>
+      <td style="font-size:12px;color:#666;">${r.notas||"—"}</td>
     </tr>`;
   }).join("");
 }
@@ -375,23 +431,108 @@ function renderItemsActuales() {
       <span style="font-size:13px;">${item.tipo}</span>
       <span style="font-size:13px;">${item.cantidad}</span>
       <span style="font-size:12px;color:#666;">${item.unidad}</span>
-      <button class="btn-remove" onclick="eliminarItem(${i})" title="Eliminar">×</button>
+      <button class="btn-remove" onclick="eliminarItem(${i})">×</button>
     </div>
   `).join("");
 }
 
-function agregarItem() {
-  const tipo = document.getElementById("new-tipo").value;
-  const cantidad = parseFloat(document.getElementById("new-cantidad").value);
-  const unidad = document.getElementById("new-unidad").value;
-  if (!tipo || !cantidad || cantidad <= 0) { alert("Selecciona tipo y cantidad."); return; }
-  itemsActuales.push({tipo, cantidad, unidad});
-  document.getElementById("new-tipo").value = "";
-  document.getElementById("new-cantidad").value = "";
-  renderItemsActuales();
+function calcularEstadoCamion(c) {
+  if (c.enReparacion === 'true' || c.enReparacion === true) return 'reparacion';
+  if (!c.kmActual || !c.kmProxima) return 'sin-datos';
+  const faltan = parseInt(c.kmProxima) - parseInt(c.kmActual);
+  if (faltan <= 0) return 'urgente';
+  if (faltan <= 2000) return 'proximo';
+  return 'ok';
 }
 
-function eliminarItem(i) { itemsActuales.splice(i, 1); renderItemsActuales(); }
+function renderFlota() {
+  let warn = 0, danger = 0;
+  camiones.forEach(c => {
+    const e = calcularEstadoCamion(c);
+    if (e === 'proximo') warn++;
+    if (e === 'urgente') danger++;
+  });
+  document.getElementById('f-total').textContent = camiones.length;
+  document.getElementById('f-warn').textContent = warn;
+  document.getElementById('f-danger').textContent = danger;
+
+  const grid = document.getElementById('fleet-grid');
+  if (!camiones.length) { grid.innerHTML = `<div style="color:#aaa;font-size:13px;padding:1rem;">Sin camiones registrados aún.</div>`; return; }
+
+  grid.innerHTML = camiones.map(c => {
+    const estado = calcularEstadoCamion(c);
+    const kmActual = parseInt(c.kmActual) || 0;
+    const kmProxima = parseInt(c.kmProxima) || 0;
+    const faltan = kmProxima - kmActual;
+    const pct = kmProxima ? Math.min(100, Math.round((kmActual / kmProxima) * 100)) : 0;
+    const fillClass = estado === 'urgente' ? 'fill-danger' : estado === 'proximo' ? 'fill-warn' : 'fill-ok';
+    const cardClass = estado === 'urgente' ? 'urgente' : estado === 'proximo' ? 'proximo' : '';
+    let estadoBadge = '';
+    if (estado === 'urgente') estadoBadge = `<span class="badge badge-danger">Urgente</span>`;
+    else if (estado === 'proximo') estadoBadge = `<span class="badge badge-warn">Próximo</span>`;
+    else if (estado === 'reparacion') estadoBadge = `<span class="badge badge-gray">En reparación</span>`;
+    else if (estado === 'sin-datos') estadoBadge = `<span class="badge badge-gray">Sin datos</span>`;
+    else estadoBadge = `<span class="badge badge-ok">Al día</span>`;
+
+    return `<div class="truck-card ${cardClass}">
+      <div class="truck-header">
+        <div class="truck-icon">🚛</div>
+        <div style="flex:1;">
+          <div class="truck-patente">${c.patente}</div>
+          <div class="truck-modelo">${c.marca} ${c.modelo} · ${c.año}</div>
+        </div>
+        <div>${estadoBadge}</div>
+      </div>
+      <div style="font-size:11px;color:#888;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.4px;">${c.uso||''}</div>
+      ${estado !== 'reparacion' && c.kmActual ? `
+      <div class="progress-wrap">
+        <div class="progress-label">
+          <span>${parseInt(c.kmActual).toLocaleString()} km</span>
+          <span>${parseInt(c.kmProxima).toLocaleString()} km próxima</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill ${fillClass}" style="width:${pct}%"></div></div>
+      </div>
+      <div class="truck-stats">
+        <div class="stat"><div class="stat-label">Faltan</div><div class="stat-value">${faltan > 0 ? faltan.toLocaleString()+' km' : 'Mantención vencida'}</div></div>
+        <div class="stat"><div class="stat-label">Última mantención</div><div class="stat-value">${c.ultimaMantencion||'Sin registro'}</div></div>
+      </div>` : `<div style="font-size:13px;color:#888;margin:8px 0;">${estado === 'reparacion' ? 'Camión en reparación.' : 'Sin datos de odómetro.'}</div>`}
+      <div style="display:flex;gap:6px;margin-top:12px;">
+        <button class="btn-update" style="flex:1;" onclick="abrirModal('${c.id}')">↺ Actualizar odómetro</button>
+        <button class="btn-danger-sm" onclick="eliminarCamion('${c.id}')">Eliminar</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function abrirModal(id) {
+  camionSeleccionado = id;
+  const c = camiones.find(x => String(x.id) === String(id));
+  document.getElementById('modal-km-title').textContent = `Actualizar — ${c.patente}`;
+  document.getElementById('modal-km-input').value = c.kmActual || '';
+  document.getElementById('modal-mantencion').value = 'no';
+  document.getElementById('modal-km').classList.add('open');
+}
+
+function cerrarModal() {
+  document.getElementById('modal-km').classList.remove('open');
+  camionSeleccionado = null;
+}
+
+async function guardarKm() {
+  const km = parseInt(document.getElementById('modal-km-input').value);
+  const mantencion = document.getElementById('modal-mantencion').value;
+  if (!km || km <= 0) { alert('Ingresa los kilómetros actuales.'); return; }
+  const c = camiones.find(x => String(x.id) === String(camionSeleccionado));
+  c.kmActual = km;
+  c.enReparacion = false;
+  if (mantencion === 'si') {
+    c.ultimaMantencion = hoy;
+    c.kmProxima = km + parseInt(c.intervalo);
+  }
+  cerrarModal();
+  try { await apiPost({action: 'updateCamion', ...c}); } catch(e) {}
+  renderFlota();
+}
 
 function actualizarSelectClientes() {
   const sel = document.getElementById("r-cliente");
@@ -410,6 +551,27 @@ function actualizarDestino() {
   else if (c) sel.value = "Recycling";
 }
 
+function agregarItem() {
+  const tipo = document.getElementById("new-tipo").value;
+  const cantidad = parseFloat(document.getElementById("new-cantidad").value);
+  const unidad = document.getElementById("new-unidad").value;
+  if (!tipo || !cantidad || cantidad <= 0) { alert("Selecciona tipo y cantidad."); return; }
+  itemsActuales.push({tipo, cantidad, unidad});
+  document.getElementById("new-tipo").value = "";
+  document.getElementById("new-cantidad").value = "";
+  renderItemsActuales();
+}
+
+function eliminarItem(i) { itemsActuales.splice(i, 1); renderItemsActuales(); }
+
+function irARetiro(clienteId) {
+  showTab("retiros", document.querySelectorAll(".nav-btn")[2]);
+  setTimeout(() => {
+    document.getElementById("r-cliente").value = clienteId;
+    actualizarDestino();
+  }, 50);
+}
+
 async function agregarCliente() {
   const nombre = document.getElementById("c-nombre").value.trim();
   const rut = document.getElementById("c-rut").value.trim();
@@ -421,8 +583,7 @@ async function agregarCliente() {
   const telefono = document.getElementById("c-telefono").value.trim();
   if (!nombre || !zona || !tipo) { alert("Completa nombre, zona y tipo de residuo."); return; }
   const btn = document.getElementById("btn-agregar-cliente");
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spinner"></span>Guardando...';
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>Guardando...';
   try {
     const cliente = {id: nextId++, nombre, rut, zona, tipo, unidad, contacto, email, telefono};
     await apiPost({action: 'saveCliente', ...cliente});
@@ -430,17 +591,13 @@ async function agregarCliente() {
     ["c-nombre","c-rut","c-contacto","c-email","c-telefono"].forEach(id => document.getElementById(id).value = "");
     ["c-zona","c-tipo","c-unidad"].forEach(id => document.getElementById(id).value = "");
     const msg = document.getElementById("msg-cliente");
-    msg.style.display = "block";
-    setTimeout(() => msg.style.display = "none", 2500);
-    renderClientes();
-    renderPanel();
+    msg.style.display = "block"; setTimeout(() => msg.style.display = "none", 2500);
+    renderClientes(); renderPanel();
   } catch(e) {
     const err = document.getElementById("err-cliente");
-    err.style.display = "block";
-    setTimeout(() => err.style.display = "none", 3000);
+    err.style.display = "block"; setTimeout(() => err.style.display = "none", 3000);
   }
-  btn.disabled = false;
-  btn.innerHTML = 'Agregar cliente';
+  btn.disabled = false; btn.innerHTML = 'Agregar cliente';
 }
 
 async function eliminarCliente(id) {
@@ -448,17 +605,8 @@ async function eliminarCliente(id) {
   try {
     await apiPost({action: 'deleteCliente', id});
     clientes = clientes.filter(c => String(c.id) !== String(id));
-    renderClientes();
-    renderPanel();
-  } catch(e) { alert("Error al eliminar. Intenta de nuevo."); }
-}
-
-function irARetiro(clienteId) {
-  showTab("retiros", document.querySelectorAll(".nav-btn")[2]);
-  setTimeout(() => {
-    document.getElementById("r-cliente").value = clienteId;
-    actualizarDestino();
-  }, 50);
+    renderClientes(); renderPanel();
+  } catch(e) { alert("Error al eliminar."); }
 }
 
 async function guardarRetiro() {
@@ -469,29 +617,60 @@ async function guardarRetiro() {
   if (!clienteId || !fecha || !destino) { alert("Selecciona cliente, fecha y destino."); return; }
   if (!itemsActuales.length) { alert("Agrega al menos un residuo al retiro."); return; }
   const btn = document.getElementById("btn-guardar-retiro");
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spinner"></span>Guardando...';
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>Guardando...';
   try {
     const retiro = {id: nextRetiroId++, clienteId, fecha, items: [...itemsActuales], destino, notas};
     await apiPost({action: 'saveRetiro', ...retiro});
     retiros.push(retiro);
-    itemsActuales = [];
-    renderItemsActuales();
+    itemsActuales = []; renderItemsActuales();
     document.getElementById("r-cliente").value = "";
     document.getElementById("r-destino").value = "";
     document.getElementById("r-notas").value = "";
     const msg = document.getElementById("msg-retiro");
-    msg.style.display = "block";
-    setTimeout(() => msg.style.display = "none", 2500);
-    renderRetiros();
-    renderPanel();
+    msg.style.display = "block"; setTimeout(() => msg.style.display = "none", 2500);
+    renderRetiros(); renderPanel();
   } catch(e) {
     const err = document.getElementById("err-retiro");
-    err.style.display = "block";
-    setTimeout(() => err.style.display = "none", 3000);
+    err.style.display = "block"; setTimeout(() => err.style.display = "none", 3000);
   }
-  btn.disabled = false;
-  btn.innerHTML = 'Guardar retiro';
+  btn.disabled = false; btn.innerHTML = 'Guardar retiro';
+}
+
+async function agregarCamion() {
+  const patente = document.getElementById("cam-patente").value.trim().toUpperCase();
+  const marca = document.getElementById("cam-marca").value.trim();
+  const modelo = document.getElementById("cam-modelo").value.trim();
+  const año = document.getElementById("cam-año").value.trim();
+  const uso = document.getElementById("cam-uso").value;
+  const intervalo = parseInt(document.getElementById("cam-intervalo").value);
+  const kmActual = parseInt(document.getElementById("cam-km").value);
+  const kmProxima = parseInt(document.getElementById("cam-proxima").value);
+  if (!patente || !marca || !uso || !intervalo) { alert("Completa patente, marca, uso e intervalo."); return; }
+  const btn = document.getElementById("btn-agregar-camion");
+  btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>Guardando...';
+  try {
+    const camion = {id: nextCamionId++, patente, marca, modelo, año, uso, intervalo, kmActual: kmActual||'', kmProxima: kmProxima||'', ultimaMantencion:'', enReparacion:false};
+    await apiPost({action: 'saveCamion', ...camion});
+    camiones.push(camion);
+    ["cam-patente","cam-marca","cam-modelo","cam-año","cam-km","cam-proxima"].forEach(id => document.getElementById(id).value = "");
+    ["cam-uso"].forEach(id => document.getElementById(id).value = "");
+    const msg = document.getElementById("msg-camion");
+    msg.style.display = "block"; setTimeout(() => msg.style.display = "none", 2500);
+    renderFlota();
+  } catch(e) {
+    const err = document.getElementById("err-camion");
+    err.style.display = "block"; setTimeout(() => err.style.display = "none", 3000);
+  }
+  btn.disabled = false; btn.innerHTML = 'Agregar camión';
+}
+
+async function eliminarCamion(id) {
+  if (!confirm("¿Eliminar este camión?")) return;
+  try {
+    await apiPost({action: 'deleteCamion', id});
+    camiones = camiones.filter(c => String(c.id) !== String(id));
+    renderFlota();
+  } catch(e) { alert("Error al eliminar."); }
 }
 
 cargarDatos();
