@@ -122,7 +122,7 @@
 </style>
 </head>
 <body>
-
+ 
 <div class="topbar">
   <div class="logo">
     <div class="logo-dot">
@@ -139,9 +139,9 @@
     <button class="nav-btn flota" onclick="showTab('flota',this)">🚛 Flota</button>
   </div>
 </div>
-
+ 
 <div class="container">
-
+ 
   <!-- PANEL -->
   <div id="tab-panel" class="section active">
     <div class="metrics">
@@ -169,7 +169,7 @@
       </table>
     </div>
   </div>
-
+ 
   <!-- CLIENTES -->
   <div id="tab-clientes" class="section">
     <div class="section-title">Agregar cliente</div>
@@ -202,7 +202,7 @@
       </table>
     </div>
   </div>
-
+ 
   <!-- RETIROS -->
   <div id="tab-retiros" class="section">
     <div class="section-title">Registrar retiro</div>
@@ -240,7 +240,7 @@
       </table>
     </div>
   </div>
-
+ 
   <!-- FLOTA -->
   <div id="tab-flota" class="section">
     <div class="metrics-3">
@@ -250,7 +250,7 @@
     </div>
     <div class="section-title">Estado de flota</div>
     <div class="fleet-grid" id="fleet-grid"></div>
-
+ 
     <div class="section-title">Agregar camión</div>
     <div id="msg-camion" class="success-msg">Camión agregado correctamente.</div>
     <div id="err-camion" class="error-msg">Error al guardar. Intenta de nuevo.</div>
@@ -272,9 +272,9 @@
       <button class="btn-green" id="btn-agregar-camion" onclick="agregarCamion()">Agregar camión</button>
     </div>
   </div>
-
+ 
 </div>
-
+ 
 <!-- MODAL ODÓMETRO -->
 <div class="modal-overlay" id="modal-km">
   <div class="modal">
@@ -292,16 +292,16 @@
     </div>
   </div>
 </div>
-
+ 
 <script>
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzqeI2oSvDp-nzRZFCyDGznVBJ_ILR8vmadR9zZA0DdAtFbrwkpzDzVjZh4pxq-OPXU/exec';
-
+ 
 let clientes = [], retiros = [], camiones = [];
 let nextId = 1, nextRetiroId = 1, nextCamionId = 1;
 let itemsActuales = [], camionSeleccionado = null;
-
+ 
 const hoy = new Date().toISOString().split('T')[0];
-
+ 
 async function apiGet(action) {
   const res = await fetch(`${SCRIPT_URL}?action=${action}`);
   return res.json();
@@ -310,7 +310,7 @@ async function apiPost(data) {
   const res = await fetch(SCRIPT_URL, {method:'POST', body:JSON.stringify(data)});
   return res.json();
 }
-
+ 
 async function cargarDatos() {
   try {
     const [c, r, cam] = await Promise.all([apiGet('getClientes'), apiGet('getRetiros'), apiGet('getCamiones')]);
@@ -326,7 +326,7 @@ async function cargarDatos() {
     document.getElementById('panel-tbody').innerHTML = `<tr><td colspan="6" class="empty">Error al cargar datos.</td></tr>`;
   }
 }
-
+ 
 function diasDesdeUltimoRetiro(cId) {
   const r = retiros.filter(x => String(x.clienteId) === String(cId));
   if (!r.length) return 999;
@@ -342,7 +342,7 @@ function badgeEstado(d) {
 }
 function diasClass(d) { return d > 60 ? "dias-danger" : d > 30 ? "dias-warn" : "dias-ok"; }
 function tipoBadge(t) { return t === "Aceites" ? `<span class="badge badge-info">${t}</span>` : `<span class="badge badge-gray">${t}</span>`; }
-
+ 
 function showTab(tab, btn) {
   document.querySelectorAll(".section").forEach(s => s.classList.remove("active"));
   document.querySelectorAll(".nav-btn").forEach(b => b.classList.remove("active"));
@@ -353,7 +353,7 @@ function showTab(tab, btn) {
   if (tab === "retiros") renderRetiros();
   if (tab === "flota") renderFlota();
 }
-
+ 
 function renderPanel() {
   const zona = document.getElementById("f-zona").value;
   const tipo = document.getElementById("f-tipo").value;
@@ -382,7 +382,7 @@ function renderPanel() {
     </tr>
   `).join("");
 }
-
+ 
 function renderClientes() {
   actualizarSelectClientes();
   const tbody = document.getElementById("clientes-tbody");
@@ -400,7 +400,7 @@ function renderClientes() {
     </tr>
   `).join("");
 }
-
+ 
 function renderRetiros() {
   actualizarSelectClientes();
   itemsActuales = [];
@@ -422,7 +422,7 @@ function renderRetiros() {
     </tr>`;
   }).join("");
 }
-
+ 
 function renderItemsActuales() {
   const body = document.getElementById("items-body");
   if (!itemsActuales.length) { body.innerHTML = `<div class="items-empty">Agrega al menos un residuo</div>`; return; }
@@ -435,7 +435,7 @@ function renderItemsActuales() {
     </div>
   `).join("");
 }
-
+ 
 function calcularEstadoCamion(c) {
   if (c.enReparacion === 'true' || c.enReparacion === true) return 'reparacion';
   if (!c.kmActual || !c.kmProxima) return 'sin-datos';
@@ -444,7 +444,7 @@ function calcularEstadoCamion(c) {
   if (faltan <= 2000) return 'proximo';
   return 'ok';
 }
-
+ 
 function renderFlota() {
   let warn = 0, danger = 0;
   camiones.forEach(c => {
@@ -455,10 +455,10 @@ function renderFlota() {
   document.getElementById('f-total').textContent = camiones.length;
   document.getElementById('f-warn').textContent = warn;
   document.getElementById('f-danger').textContent = danger;
-
+ 
   const grid = document.getElementById('fleet-grid');
   if (!camiones.length) { grid.innerHTML = `<div style="color:#aaa;font-size:13px;padding:1rem;">Sin camiones registrados aún.</div>`; return; }
-
+ 
   grid.innerHTML = camiones.map(c => {
     const estado = calcularEstadoCamion(c);
     const kmActual = parseInt(c.kmActual) || 0;
@@ -473,7 +473,7 @@ function renderFlota() {
     else if (estado === 'reparacion') estadoBadge = `<span class="badge badge-gray">En reparación</span>`;
     else if (estado === 'sin-datos') estadoBadge = `<span class="badge badge-gray">Sin datos</span>`;
     else estadoBadge = `<span class="badge badge-ok">Al día</span>`;
-
+ 
     return `<div class="truck-card ${cardClass}">
       <div class="truck-header">
         <div class="truck-icon">🚛</div>
@@ -494,7 +494,7 @@ function renderFlota() {
       </div>
       <div class="truck-stats">
         <div class="stat"><div class="stat-label">Faltan</div><div class="stat-value">${faltan > 0 ? faltan.toLocaleString()+' km' : 'Mantención vencida'}</div></div>
-        <div class="stat"><div class="stat-label">Última mantención</div><div class="stat-value">${c.ultimaMantencion||'Sin registro'}</div></div>
+        <div class="stat"><div class="stat-label">Última mantención</div><div class="stat-value">${c.ultimaMantencion ? c.ultimaMantencion.split('T')[0] : 'Sin registro'}</div></div>
       </div>` : `<div style="font-size:13px;color:#888;margin:8px 0;">${estado === 'reparacion' ? 'Camión en reparación.' : 'Sin datos de odómetro.'}</div>`}
       <div style="display:flex;gap:6px;margin-top:12px;">
         <button class="btn-update" style="flex:1;" onclick="abrirModal('${c.id}')">↺ Actualizar odómetro</button>
@@ -503,7 +503,7 @@ function renderFlota() {
     </div>`;
   }).join('');
 }
-
+ 
 function abrirModal(id) {
   camionSeleccionado = id;
   const c = camiones.find(x => String(x.id) === String(id));
@@ -512,12 +512,12 @@ function abrirModal(id) {
   document.getElementById('modal-mantencion').value = 'no';
   document.getElementById('modal-km').classList.add('open');
 }
-
+ 
 function cerrarModal() {
   document.getElementById('modal-km').classList.remove('open');
   camionSeleccionado = null;
 }
-
+ 
 async function guardarKm() {
   const km = parseInt(document.getElementById('modal-km-input').value);
   const mantencion = document.getElementById('modal-mantencion').value;
@@ -533,7 +533,7 @@ async function guardarKm() {
   try { await apiPost({action: 'updateCamion', ...c}); } catch(e) {}
   renderFlota();
 }
-
+ 
 function actualizarSelectClientes() {
   const sel = document.getElementById("r-cliente");
   const current = sel.value;
@@ -541,7 +541,7 @@ function actualizarSelectClientes() {
     `<option value="${c.id}"${String(c.id) === String(current) ? " selected" : ""}>${c.nombre} (${c.zona})</option>`
   ).join("");
 }
-
+ 
 function actualizarDestino() {
   const cId = document.getElementById("r-cliente").value;
   const c = clientes.find(x => String(x.id) === String(cId));
@@ -550,7 +550,7 @@ function actualizarDestino() {
   else if (c && c.zona === "Copiapó") sel.value = "Confinor";
   else if (c) sel.value = "Recycling";
 }
-
+ 
 function agregarItem() {
   const tipo = document.getElementById("new-tipo").value;
   const cantidad = parseFloat(document.getElementById("new-cantidad").value);
@@ -561,9 +561,9 @@ function agregarItem() {
   document.getElementById("new-cantidad").value = "";
   renderItemsActuales();
 }
-
+ 
 function eliminarItem(i) { itemsActuales.splice(i, 1); renderItemsActuales(); }
-
+ 
 function irARetiro(clienteId) {
   showTab("retiros", document.querySelectorAll(".nav-btn")[2]);
   setTimeout(() => {
@@ -571,7 +571,7 @@ function irARetiro(clienteId) {
     actualizarDestino();
   }, 50);
 }
-
+ 
 async function agregarCliente() {
   const nombre = document.getElementById("c-nombre").value.trim();
   const rut = document.getElementById("c-rut").value.trim();
@@ -599,7 +599,7 @@ async function agregarCliente() {
   }
   btn.disabled = false; btn.innerHTML = 'Agregar cliente';
 }
-
+ 
 async function eliminarCliente(id) {
   if (!confirm("¿Eliminar este cliente?")) return;
   try {
@@ -608,7 +608,7 @@ async function eliminarCliente(id) {
     renderClientes(); renderPanel();
   } catch(e) { alert("Error al eliminar."); }
 }
-
+ 
 async function guardarRetiro() {
   const clienteId = document.getElementById("r-cliente").value;
   const fecha = document.getElementById("r-fecha").value;
@@ -635,7 +635,7 @@ async function guardarRetiro() {
   }
   btn.disabled = false; btn.innerHTML = 'Guardar retiro';
 }
-
+ 
 async function agregarCamion() {
   const patente = document.getElementById("cam-patente").value.trim().toUpperCase();
   const marca = document.getElementById("cam-marca").value.trim();
@@ -663,7 +663,7 @@ async function agregarCamion() {
   }
   btn.disabled = false; btn.innerHTML = 'Agregar camión';
 }
-
+ 
 async function eliminarCamion(id) {
   if (!confirm("¿Eliminar este camión?")) return;
   try {
@@ -672,7 +672,7 @@ async function eliminarCamion(id) {
     renderFlota();
   } catch(e) { alert("Error al eliminar."); }
 }
-
+ 
 cargarDatos();
 </script>
 </body>
