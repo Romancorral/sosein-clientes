@@ -494,7 +494,7 @@ function renderFlota() {
       </div>
       <div class="truck-stats">
         <div class="stat"><div class="stat-label">Faltan</div><div class="stat-value">${faltan > 0 ? faltan.toLocaleString()+' km' : 'Mantención vencida'}</div></div>
-        <div class="stat"><div class="stat-label">Última mantención</div><div class="stat-value">${c.ultimaMantencion ? c.ultimaMantencion.split('T')[0] : 'Sin registro'}</div></div>
+        <div class="stat"><div class="stat-label">Última mantención</div><div class="stat-value">${c.ultimaMantencion||'Sin registro'}</div></div>
       </div>` : `<div style="font-size:13px;color:#888;margin:8px 0;">${estado === 'reparacion' ? 'Camión en reparación.' : 'Sin datos de odómetro.'}</div>`}
       <div style="display:flex;gap:6px;margin-top:12px;">
         <button class="btn-update" style="flex:1;" onclick="abrirModal('${c.id}')">↺ Actualizar odómetro</button>
