@@ -198,7 +198,7 @@
         <thead><tr>
           <th style="width:27%;">Nombre</th><th style="width:13%;">Zona</th><th style="width:12%;">Tipo</th><th style="width:24%;">Contacto</th><th style="width:24%;">Acciones</th>
         </tr></thead>
-        <tbody id="clientes-tbody"><tr><td colspan="5" class="loading">Cargando...</td></tr></tbody>
+        <tbody id="clientes-tbody"><tr><td colspan="6" class="loading">Cargando...</td></tr></tbody>
       </table>
     </div>
   </div>
@@ -222,7 +222,7 @@
         <div class="item-row header"><span>Tipo de residuo</span><span>Cantidad</span><span>Unidad</span><span></span></div>
         <div id="items-body"><div class="items-empty">Agrega al menos un residuo</div></div>
         <div class="item-add">
-          <select id="new-tipo"><option value="">Tipo de residuo...</option><option>Filtros de aceite</option><option>Filtros de aire</option><option>EPP contaminado</option><option>Trapos y guaipes</option><option>Sólidos con HC</option><option>Chatarra electrónica</option><option>Tambores vacíos</option><option>Tierra impregnada</option><option>Mangueras hidráulicas</option><option>Aceites usados</option><option>Lubricantes usados</option><option>Otro</option></select>
+          <select id="new-tipo"><option value="">Tipo de residuo...</option><option>Filtros de aceite</option><option>Filtros de aire</option><option>EPP contaminado</option><option>Trapos y guaipes</option><option>Sólidos con HC</option><option>Chatarra electrónica</option><option>Tambores vacíos</option><option>Tierra impregnada</option><option>Mangueras hidráulicas</option><option>Aceites usados</option><option>Lubricantes usados</option><option>Baterías</option><option>Lodos</option><option>Otro</option></select>
           <input id="new-cantidad" type="number" placeholder="0" min="0" step="0.1">
           <select id="new-unidad"><option>Tambores</option><option>Toneladas</option><option>Pallets</option><option>Unidades</option></select>
           <button class="btn-add-item" onclick="agregarItem()" title="Agregar">+</button>
@@ -234,7 +234,7 @@
     <div class="card">
       <table>
         <thead><tr>
-          <th style="width:22%;">Cliente</th><th style="width:11%;">Fecha</th><th style="width:37%;">Residuos</th><th style="width:13%;">Destino</th><th style="width:17%;">Notas</th>
+          <th style="width:20%;">Cliente</th><th style="width:10%;">Fecha</th><th style="width:30%;">Residuos</th><th style="width:11%;">Destino</th><th style="width:14%;">Notas</th><th style="width:15%;">Acción</th>
         </tr></thead>
         <tbody id="retiros-tbody"><tr><td colspan="5" class="loading">Cargando...</td></tr></tbody>
       </table>
@@ -408,7 +408,7 @@ function renderRetiros() {
   document.getElementById("r-fecha").value = hoy;
   const tbody = document.getElementById("retiros-tbody");
   const sorted = [...retiros].sort((a,b) => new Date(b.fecha) - new Date(a.fecha));
-  if (!sorted.length) { tbody.innerHTML = `<tr><td colspan="5" class="empty">Sin retiros registrados aún</td></tr>`; return; }
+  if (!sorted.length) { tbody.innerHTML = `<tr><td colspan="6" class="empty">Sin retiros registrados aún</td></tr>`; return; }
   tbody.innerHTML = sorted.map(r => {
     const c = clientes.find(x => String(x.id) === String(r.clienteId));
     const items = Array.isArray(r.items) ? r.items : [];
@@ -419,6 +419,7 @@ function renderRetiros() {
       <td class="retiro-items">${itemsStr}</td>
       <td><span class="badge badge-gray">${r.destino}</span></td>
       <td style="font-size:12px;color:#666;">${r.notas||"—"}</td>
+      <td><button class="btn-danger-sm" onclick="eliminarRetiro('${r.id}')">Eliminar</button></td>
     </tr>`;
   }).join("");
 }
@@ -673,7 +674,18 @@ async function eliminarCamion(id) {
   } catch(e) { alert("Error al eliminar."); }
 }
  
+async function eliminarRetiro(id) {
+  if (!confirm("¿Eliminar este retiro?")) return;
+  try {
+    await apiPost({action: 'deleteRetiro', id});
+    retiros = retiros.filter(r => String(r.id) !== String(id));
+    renderRetiros();
+    renderPanel();
+  } catch(e) { alert("Error al eliminar."); }
+}
+ 
 cargarDatos();
 </script>
 </body>
 </html>
+ 
