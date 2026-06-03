@@ -137,6 +137,8 @@
     <button class="nav-btn" onclick="showTab('retiros',this)">Retiros</button>
     <div class="nav-divider"></div>
     <button class="nav-btn flota" onclick="showTab('flota',this)">🚛 Flota</button>
+    <div class="nav-divider"></div>
+    <button class="nav-btn flota" onclick="showTab('cotizador',this)">🧮 Cotizador</button>
   </div>
 </div>
  
@@ -273,7 +275,114 @@
     </div>
   </div>
  
-</div>
+  <!-- COTIZADOR -->
+  <div id="tab-cotizador" class="section">
+    <div style="display:flex;gap:4px;border-bottom:0.5px solid #e8e8e4;margin-bottom:1.5rem;">
+      <button class="nav-btn active" id="cot-tab-btn-1" onclick="showCotTab('cotizador-main',this)" style="font-size:12px;padding:6px 12px;">Cotizador</button>
+      <button class="nav-btn" id="cot-tab-btn-2" onclick="showCotTab('cotizador-config',this)" style="font-size:12px;padding:6px 12px;">Configuración general</button>
+      <button class="nav-btn" id="cot-tab-btn-3" onclick="showCotTab('cotizador-camiones',this)" style="font-size:12px;padding:6px 12px;">Parámetros por camión</button>
+    </div>
+    <div id="cotizador-main" class="cot-section" style="display:block;">
+      <div class="form-card">
+        <div class="section-title" style="font-size:13px;color:#888;text-transform:uppercase;letter-spacing:0.4px;">Datos del viaje</div>
+        <div class="form-grid three" style="margin-top:1rem;">
+          <div class="field"><label>Camión</label>
+            <select id="cot-camion" onchange="calcularCot()">
+              <option value="slht42">SLHT42 — Chevrolet FVR (grande)</option>
+              <option value="tjsg74">TJSG74 — DFSK Truck CS (chico)</option>
+              <option value="czhj94">CZHJ94 — Mitsubishi Fuso Canter</option>
+            </select>
+          </div>
+          <div class="field"><label>Kilómetros del viaje</label><input type="number" id="cot-km" value="220" min="0" oninput="calcularCot()"></div>
+          <div class="field"><label>Peajes ($)</label><input type="number" id="cot-peajes" value="0" min="0" oninput="calcularCot()"></div>
+        </div>
+      </div>
+      <div class="metrics-3" style="margin-bottom:1.5rem;">
+        <div class="metric"><div class="metric-label">Costo del viaje</div><div class="metric-value" id="res-costo">$0</div></div>
+        <div class="metric"><div class="metric-label">Precio a cobrar</div><div class="metric-value" style="color:#16a34a;" id="res-precio">$0</div></div>
+        <div class="metric"><div class="metric-label">Precio por km</div><div class="metric-value" id="res-km">$0</div></div>
+      </div>
+      <div class="card" style="padding:1rem;">
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f0f0ec;font-size:13px;"><span style="color:#666;">Costo fijo del viaje</span><span id="bd-fijo">$0</span></div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f0f0ec;font-size:13px;"><span style="color:#666;">Combustible</span><span id="bd-combustible">$0</span></div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f0f0ec;font-size:13px;"><span style="color:#666;">Aceite</span><span id="bd-aceite">$0</span></div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f0f0ec;font-size:13px;"><span style="color:#666;">Neumáticos</span><span id="bd-neumatico">$0</span></div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f0f0ec;font-size:13px;"><span style="color:#666;">Mantención</span><span id="bd-mantencion">$0</span></div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f0f0ec;font-size:13px;"><span style="color:#666;">Peajes</span><span id="bd-peajes">$0</span></div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f0f0ec;font-size:13px;"><span style="color:#666;">Subtotal costo</span><span id="bd-subtotal">$0</span></div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f0f0ec;font-size:13px;"><span style="color:#666;">Margen</span><span id="bd-margen">$0</span></div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;font-size:13px;font-weight:500;"><span>Total a cobrar</span><span style="color:#16a34a;" id="bd-total">$0</span></div>
+      </div>
+    </div>
+    <div id="cotizador-config" class="cot-section" style="display:none;">
+      <div class="form-card">
+        <div class="section-title" style="font-size:13px;color:#888;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:1rem;">Mano de obra</div>
+        <div class="form-grid">
+          <div class="field"><label>Sueldo conductor ($/mes)</label><input type="number" id="cfg-conductor" value="997000" oninput="guardarCotConfig()"></div>
+          <div class="field"><label>Bonos adicionales ($/mes)</label><input type="number" id="cfg-bonos" value="730000" oninput="guardarCotConfig()"></div>
+        </div>
+      </div>
+      <div class="form-card">
+        <div class="section-title" style="font-size:13px;color:#888;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:1rem;">Costos fijos mensuales</div>
+        <div class="form-grid three">
+          <div class="field"><label>Costos administrativos ($/mes)</label><input type="number" id="cfg-admin" value="620000" oninput="guardarCotConfig()"></div>
+          <div class="field"><label>Seguro SOAP ($/mes)</label><input type="number" id="cfg-soap" value="3286" oninput="guardarCotConfig()"></div>
+          <div class="field"><label>Seguro chofer ($/mes)</label><input type="number" id="cfg-seguro" value="7000" oninput="guardarCotConfig()"></div>
+        </div>
+      </div>
+      <div class="form-card">
+        <div class="section-title" style="font-size:13px;color:#888;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:1rem;">Margen y viajes</div>
+        <div class="form-grid">
+          <div class="field"><label>Margen (%)</label><input type="number" id="cfg-margen" value="20" min="0" max="100" oninput="guardarCotConfig()"></div>
+          <div class="field"><label>Viajes por mes</label><input type="number" id="cfg-viajes" value="20" oninput="guardarCotConfig()"></div>
+        </div>
+      </div>
+    </div>
+    <div id="cotizador-camiones" class="cot-section" style="display:none;">
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:1rem;">
+        <button class="btn-sm" id="pcam-btn-slht42" onclick="selectCotCamion('slht42',this)" style="border-radius:99px;background:#1a1a1a;color:#fff;border-color:#1a1a1a;">SLHT42 — FVR</button>
+        <button class="btn-sm" id="pcam-btn-tjsg74" onclick="selectCotCamion('tjsg74',this)" style="border-radius:99px;">TJSG74 — DFSK</button>
+        <button class="btn-sm" id="pcam-btn-czhj94" onclick="selectCotCamion('czhj94',this)" style="border-radius:99px;">CZHJ94 — Mitsubishi</button>
+      </div>
+      <div class="form-card">
+        <div class="section-title" style="font-size:13px;color:#888;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:1rem;">Insumos y precios</div>
+        <div class="form-grid three">
+          <div class="field"><label>Combustible ($/litro)</label><input type="number" id="cam-combustible" value="1608" oninput="guardarCotCamion()"></div>
+          <div class="field"><label>Precio aceite ($/galón)</label><input type="number" id="cam-aceite-precio" value="91000" oninput="guardarCotCamion()"></div>
+          <div class="field"><label>Precio neumático ($)</label><input type="number" id="cam-neumatico" value="370000" oninput="guardarCotCamion()"></div>
+        </div>
+        <div class="form-grid"><div class="field"><label>Precio recauche ($)</label><input type="number" id="cam-recauche" value="15000" oninput="guardarCotCamion()"></div></div>
+      </div>
+      <div class="form-card">
+        <div class="section-title" style="font-size:13px;color:#888;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:1rem;">Parámetros operativos</div>
+        <div class="form-grid three">
+          <div class="field"><label>Consumo (km/litro)</label><input type="number" id="cam-consumo" value="4" step="0.1" oninput="guardarCotCamion()"></div>
+          <div class="field"><label>Intervalo cambio aceite (km)</label><input type="number" id="cam-aceite-km" value="7000" oninput="guardarCotCamion()"></div>
+          <div class="field"><label>Estanques por cambio (lts)</label><input type="number" id="cam-aceite-lts" value="2" oninput="guardarCotCamion()"></div>
+        </div>
+        <div class="form-grid three">
+          <div class="field"><label>N° neumáticos</label><input type="number" id="cam-neumaticos" value="6" oninput="guardarCotCamion()"></div>
+          <div class="field"><label>Intervalo recauche (km)</label><input type="number" id="cam-recauche-km" value="90000" oninput="guardarCotCamion()"></div>
+          <div class="field"><label>N° recauches</label><input type="number" id="cam-recauche-n" value="2" oninput="guardarCotCamion()"></div>
+        </div>
+      </div>
+      <div class="form-card">
+        <div class="section-title" style="font-size:13px;color:#888;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:1rem;">Mantención</div>
+        <div class="form-grid">
+          <div class="field"><label>Costo mantención promedio ($)</label><input type="number" id="cam-mantencion" value="600000" oninput="guardarCotCamion()"></div>
+          <div class="field"><label>Intervalo cálculo mantención (km)</label><input type="number" id="cam-mantencion-km" value="5000" oninput="guardarCotCamion()"><span style="font-size:11px;color:#888;margin-top:3px;">Costo ÷ intervalo = $/km</span></div>
+        </div>
+      </div>
+      <div class="form-card">
+        <div class="section-title" style="font-size:13px;color:#888;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:1rem;">Depreciación</div>
+        <div class="form-grid three">
+          <div class="field"><label>Valor adquisición ($)</label><input type="number" id="cam-valor" value="49000000" oninput="guardarCotCamion()"></div>
+          <div class="field"><label>Vida útil (meses)</label><input type="number" id="cam-vida" value="120" oninput="guardarCotCamion()"></div>
+          <div class="field"><label>Valor residual ($)</label><input type="number" id="cam-residual" value="4690000" oninput="guardarCotCamion()"></div>
+        </div>
+      </div>
+    </div>
+  </div>
  
 <!-- MODAL ODÓMETRO -->
 <div class="modal-overlay" id="modal-km">
@@ -683,6 +792,120 @@ async function eliminarRetiro(id) {
     renderPanel();
   } catch(e) { alert("Error al eliminar."); }
 }
+ 
+ 
+// ===== COTIZADOR =====
+let cotConfig = {
+  conductor:997000, bonos:730000,
+  admin:620000, soap:3286, seguro:7000,
+  viajes:20, margen:20
+};
+ 
+let cotCamiones = {
+  slht42: {combustible:1608,aceitePrecio:91000,neumatico:370000,recauche:15000,consumo:4,aceiteKm:7000,aceiteLts:2,neumaticos:6,recaucheKm:90000,recaucheN:2,mantencion:600000,mantencionKm:5000,valor:49000000,vida:120,residual:4690000},
+  tjsg74: {combustible:1608,aceitePrecio:91000,neumatico:370000,recauche:15000,consumo:4,aceiteKm:7000,aceiteLts:2,neumaticos:4,recaucheKm:90000,recaucheN:2,mantencion:400000,mantencionKm:5000,valor:15000000,vida:120,residual:1500000},
+  czhj94: {combustible:1608,aceitePrecio:91000,neumatico:370000,recauche:15000,consumo:6,aceiteKm:7000,aceiteLts:2,neumaticos:6,recaucheKm:90000,recaucheN:2,mantencion:600000,mantencionKm:5000,valor:30000000,vida:120,residual:3000000}
+};
+let cotCamionActual = 'slht42';
+ 
+function fmtCot(n) { return '$' + Math.round(n).toLocaleString('es-CL'); }
+ 
+function calcularCot() {
+  const camionId = document.getElementById('cot-camion').value;
+  const km = parseFloat(document.getElementById('cot-km').value) || 0;
+  const peajes = parseFloat(document.getElementById('cot-peajes').value) || 0;
+  const c = cotConfig;
+  const cam = cotCamiones[camionId];
+  const moObra = c.conductor + c.bonos;
+  const depreciacion = (cam.valor - cam.residual) / cam.vida;
+  const costosFijosMes = moObra + depreciacion + c.admin + c.soap + c.seguro;
+  const costoFijoViaje = costosFijosMes / c.viajes;
+  const combustibleKm = cam.combustible / cam.consumo;
+  const aceiteKm = (cam.aceiteLts * cam.aceitePrecio) / cam.aceiteKm;
+  const neumaticoKm = ((cam.neumatico + cam.recauche * cam.recaucheN) * cam.neumaticos) / (cam.recaucheN * cam.recaucheKm);
+  const mantencionKm = cam.mantencion / cam.mantencionKm;
+  const costoCombustible = combustibleKm * km;
+  const costoAceite = aceiteKm * km;
+  const costoNeumatico = neumaticoKm * km;
+  const costoMantencion = mantencionKm * km;
+  const subtotal = costoFijoViaje + costoCombustible + costoAceite + costoNeumatico + costoMantencion + peajes;
+  const margenMonto = subtotal * (c.margen / 100);
+  const total = subtotal + margenMonto;
+  const precioKm = km > 0 ? total / km : 0;
+  document.getElementById('res-costo').textContent = fmtCot(subtotal);
+  document.getElementById('res-precio').textContent = fmtCot(total);
+  document.getElementById('res-km').textContent = fmtCot(precioKm);
+  document.getElementById('bd-fijo').textContent = fmtCot(costoFijoViaje);
+  document.getElementById('bd-combustible').textContent = fmtCot(costoCombustible) + ' ($'+Math.round(combustibleKm)+'/km)';
+  document.getElementById('bd-aceite').textContent = fmtCot(costoAceite) + ' ($'+Math.round(aceiteKm)+'/km)';
+  document.getElementById('bd-neumatico').textContent = fmtCot(costoNeumatico) + ' ($'+neumaticoKm.toFixed(2)+'/km)';
+  document.getElementById('bd-mantencion').textContent = fmtCot(costoMantencion) + ' ($'+Math.round(mantencionKm)+'/km)';
+  document.getElementById('bd-peajes').textContent = fmtCot(peajes);
+  document.getElementById('bd-subtotal').textContent = fmtCot(subtotal);
+  document.getElementById('bd-margen').textContent = c.margen+'% — '+fmtCot(margenMonto);
+  document.getElementById('bd-total').textContent = fmtCot(total);
+}
+ 
+function guardarCotConfig() {
+  ['conductor','bonos','admin','soap','seguro','viajes','margen'].forEach(id => {
+    const val = parseFloat(document.getElementById('cfg-'+id).value);
+    if (!isNaN(val)) cotConfig[id] = val;
+  });
+  calcularCot();
+}
+ 
+function selectCotCamion(id, btn) {
+  cotCamionActual = id;
+  document.querySelectorAll('[id^="pcam-btn-"]').forEach(b => {
+    b.style.background=''; b.style.color=''; b.style.borderColor='';
+  });
+  btn.style.background='#1a1a1a'; btn.style.color='#fff'; btn.style.borderColor='#1a1a1a';
+  const cam = cotCamiones[id];
+  document.getElementById('cam-combustible').value = cam.combustible;
+  document.getElementById('cam-aceite-precio').value = cam.aceitePrecio;
+  document.getElementById('cam-neumatico').value = cam.neumatico;
+  document.getElementById('cam-recauche').value = cam.recauche;
+  document.getElementById('cam-consumo').value = cam.consumo;
+  document.getElementById('cam-aceite-km').value = cam.aceiteKm;
+  document.getElementById('cam-aceite-lts').value = cam.aceiteLts;
+  document.getElementById('cam-neumaticos').value = cam.neumaticos;
+  document.getElementById('cam-recauche-km').value = cam.recaucheKm;
+  document.getElementById('cam-recauche-n').value = cam.recaucheN;
+  document.getElementById('cam-mantencion').value = cam.mantencion;
+  document.getElementById('cam-mantencion-km').value = cam.mantencionKm;
+  document.getElementById('cam-valor').value = cam.valor;
+  document.getElementById('cam-vida').value = cam.vida;
+  document.getElementById('cam-residual').value = cam.residual;
+}
+ 
+function guardarCotCamion() {
+  const cam = cotCamiones[cotCamionActual];
+  cam.combustible = parseFloat(document.getElementById('cam-combustible').value)||cam.combustible;
+  cam.aceitePrecio = parseFloat(document.getElementById('cam-aceite-precio').value)||cam.aceitePrecio;
+  cam.neumatico = parseFloat(document.getElementById('cam-neumatico').value)||cam.neumatico;
+  cam.recauche = parseFloat(document.getElementById('cam-recauche').value)||cam.recauche;
+  cam.consumo = parseFloat(document.getElementById('cam-consumo').value)||cam.consumo;
+  cam.aceiteKm = parseFloat(document.getElementById('cam-aceite-km').value)||cam.aceiteKm;
+  cam.aceiteLts = parseFloat(document.getElementById('cam-aceite-lts').value)||cam.aceiteLts;
+  cam.neumaticos = parseFloat(document.getElementById('cam-neumaticos').value)||cam.neumaticos;
+  cam.recaucheKm = parseFloat(document.getElementById('cam-recauche-km').value)||cam.recaucheKm;
+  cam.recaucheN = parseFloat(document.getElementById('cam-recauche-n').value)||cam.recaucheN;
+  cam.mantencion = parseFloat(document.getElementById('cam-mantencion').value)||cam.mantencion;
+  cam.mantencionKm = parseFloat(document.getElementById('cam-mantencion-km').value)||cam.mantencionKm;
+  cam.valor = parseFloat(document.getElementById('cam-valor').value)||cam.valor;
+  cam.vida = parseFloat(document.getElementById('cam-vida').value)||cam.vida;
+  cam.residual = parseFloat(document.getElementById('cam-residual').value)||cam.residual;
+  calcularCot();
+}
+ 
+function showCotTab(tab, btn) {
+  document.querySelectorAll('.cot-section').forEach(s => s.style.display='none');
+  document.querySelectorAll('[id^="cot-tab-btn-"]').forEach(b => b.classList.remove('active'));
+  document.getElementById(tab).style.display='block';
+  btn.classList.add('active');
+}
+ 
+calcularCot();
  
 cargarDatos();
 </script>
