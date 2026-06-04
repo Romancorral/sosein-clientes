@@ -949,32 +949,41 @@ async function guardarChecklist(){
   chkSecciones[2].items.forEach(i=>mecanico[i.num]=chkEstados[i.num]);
   chkSecciones[3].items.forEach(i=>seguridad[i.num]=chkEstados[i.num]);
   try{
-    await apiPost({action:'saveChecklist',id:nextChkId++,fecha,responsable:resp,equipo,exterior,interior,mecanico,seguridad,obsExterior:document.getElementById('obs-exterior').value,obsInterior:document.getElementById('obs-interior').value,obsMecanico:document.getElementById('obs-mecanico').value,obsSeguridad:document.getElementById('obs-seguridad').value});
-    generarPDFChecklist(resp,equipo,fecha,exterior,interior,mecanico,seguridad);
+    const obsExterior=document.getElementById('obs-exterior').value;
+    const obsInterior=document.getElementById('obs-interior').value;
+    const obsMecanico=document.getElementById('obs-mecanico').value;
+    const obsSeguridad=document.getElementById('obs-seguridad').value;
+    await apiPost({action:'saveChecklist',id:nextChkId++,fecha,responsable:resp,equipo,exterior,interior,mecanico,seguridad,obsExterior,obsInterior,obsMecanico,obsSeguridad});
+    const htmlPDF=generarHTMLChecklist(resp,equipo,fecha,exterior,interior,mecanico,seguridad,obsExterior,obsInterior,obsMecanico,obsSeguridad);
+    generarPDFChecklist(htmlPDF);
+    try{await apiPost({action:'savePDF',equipo,fecha,html:htmlPDF});}catch(e){console.log('Error guardando en Drive',e);}
     showMsg('msg-checklist');
     limpiarChecklist();
   }catch(e){showMsg('err-checklist');}
   btn.disabled=false;btn.innerHTML='Guardar y generar PDF';
 }
  
-function generarPDFChecklist(resp,equipo,fecha,exterior,interior,mecanico,seguridad){
+function generarHTMLChecklist(resp,equipo,fecha,exterior,interior,mecanico,seguridad,obsExterior,obsInterior,obsMecanico,obsSeguridad){
   const colorMap={BE:'#dcfce7',ME:'#fee2e2',F:'#fef3c7',NA:'#f0f0ec'};
-  const cell=(num,desc,estados)=>`<tr><td style="padding:4px 6px;font-size:11px;text-align:center;border:1px solid #ddd;">${num}</td><td style="padding:4px 6px;font-size:11px;border:1px solid #ddd;">${desc}</td>${['BE','ME','F','NA'].map(e=>`<td style="padding:4px 6px;text-align:center;font-size:11px;border:1px solid #ddd;background:${estados[num]===e?colorMap[e]:'#fff'};">${estados[num]===e?'✓':''}</td>`).join('')}</tr>`;
-  const tabla=(titulo,items,estados,obs)=>`<div style="margin-bottom:12px;"><table style="width:100%;border-collapse:collapse;"><thead><tr><th colspan="6" style="background:#1a4a6b;color:#fff;padding:6px 8px;font-size:12px;text-align:left;border:1px solid #1a4a6b;">${titulo}</th></tr><tr style="background:#f0f0ec;"><th style="padding:4px 6px;font-size:10px;border:1px solid #ddd;">N°</th><th style="padding:4px 6px;font-size:10px;border:1px solid #ddd;">Descripción</th><th style="padding:4px 6px;font-size:10px;text-align:center;border:1px solid #ddd;">BE</th><th style="padding:4px 6px;font-size:10px;text-align:center;border:1px solid #ddd;">ME</th><th style="padding:4px 6px;font-size:10px;text-align:center;border:1px solid #ddd;">F</th><th style="padding:4px 6px;font-size:10px;text-align:center;border:1px solid #ddd;">N/A</th></tr></thead><tbody>${items.map(i=>cell(i.num,i.desc,estados)).join('')}<tr><td colspan="6" style="padding:4px 6px;font-size:10px;border:1px solid #ddd;"><b>Observaciones:</b> ${obs||''}</td></tr></tbody></table></div>`;
+  const cell=(num,desc,estados)=>`<tr><td style="padding:4px 6px;font-size:11px;text-align:center;border:1px solid #ddd;">${num}</td><td style="padding:4px 6px;font-size:11px;border:1px solid #ddd;">${desc}</td>${['BE','ME','F','NA'].map(e=>`<td style="padding:4px 6px;text-align:center;font-size:11px;border:1px solid #ddd;background:${estados[num]===e?colorMap[e]:'#fff'};">${estados[num]===e?'&#10003;':''}</td>`).join('')}</tr>`;
+  const tabla=(titulo,items,estados,obs)=>`<div style="margin-bottom:12px;"><table style="width:100%;border-collapse:collapse;"><thead><tr><th colspan="6" style="background:#1a4a6b;color:#fff;padding:6px 8px;font-size:12px;text-align:left;border:1px solid #1a4a6b;">${titulo}</th></tr><tr style="background:#f0f0ec;"><th style="padding:4px 6px;font-size:10px;border:1px solid #ddd;">N</th><th style="padding:4px 6px;font-size:10px;border:1px solid #ddd;">Descripcion</th><th style="padding:4px 6px;font-size:10px;text-align:center;border:1px solid #ddd;">BE</th><th style="padding:4px 6px;font-size:10px;text-align:center;border:1px solid #ddd;">ME</th><th style="padding:4px 6px;font-size:10px;text-align:center;border:1px solid #ddd;">F</th><th style="padding:4px 6px;font-size:10px;text-align:center;border:1px solid #ddd;">N/A</th></tr></thead><tbody>${items.map(i=>cell(i.num,i.desc,estados)).join('')}<tr><td colspan="6" style="padding:4px 6px;font-size:10px;border:1px solid #ddd;"><b>Observaciones:</b> ${obs||''}</td></tr></tbody></table></div>`;
   const firmaData=document.getElementById('firma-canvas').toDataURL();
-  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Check List SOSEIN</title><style>body{font-family:Arial,sans-serif;margin:20px;color:#1a1a1a;}@media print{button{display:none;}}</style></head><body>
-  <div style="text-align:center;margin-bottom:16px;"><h2 style="font-size:16px;font-weight:bold;text-transform:uppercase;">Revisión Periódica de Vehículo / Check List</h2></div>
+  return `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Check List SOSEIN</title><style>body{font-family:Arial,sans-serif;margin:20px;color:#1a1a1a;}@media print{button{display:none;}}</style></head><body>
+  <div style="text-align:center;margin-bottom:16px;"><h2 style="font-size:16px;font-weight:bold;text-transform:uppercase;">Revision Periodica de Vehiculo / Check List</h2></div>
   <table style="width:100%;border-collapse:collapse;margin-bottom:16px;border:1px solid #ddd;"><tr><td style="padding:6px 10px;font-size:12px;border:1px solid #ddd;"><b>Responsable:</b> ${resp}</td><td style="padding:6px 10px;font-size:12px;border:1px solid #ddd;"><b>Equipo:</b> ${equipo}</td><td style="padding:6px 10px;font-size:12px;border:1px solid #ddd;"><b>Fecha:</b> ${fecha}</td></tr></table>
   <div style="font-size:10px;color:#666;margin-bottom:8px;">BE: Buen estado, ME: Mal estado, F: Falta, NA: No aplica</div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-    ${tabla('Exterior',chkSecciones[0].items,exterior,document.getElementById('obs-exterior')?document.getElementById('obs-exterior').value:'')}
-    ${tabla('Interior',chkSecciones[1].items,interior,document.getElementById('obs-interior')?document.getElementById('obs-interior').value:'')}
-    ${tabla('Estado mecánico',chkSecciones[2].items,mecanico,document.getElementById('obs-mecanico')?document.getElementById('obs-mecanico').value:'')}
-    ${tabla('Seguridad',chkSecciones[3].items,seguridad,document.getElementById('obs-seguridad')?document.getElementById('obs-seguridad').value:'')}
+    ${tabla('Exterior',chkSecciones[0].items,exterior,obsExterior)}
+    ${tabla('Interior',chkSecciones[1].items,interior,obsInterior)}
+    ${tabla('Estado mecanico',chkSecciones[2].items,mecanico,obsMecanico)}
+    ${tabla('Seguridad',chkSecciones[3].items,seguridad,obsSeguridad)}
   </div>
   <div style="margin-top:16px;"><b style="font-size:12px;">Firma:</b><br><img src="${firmaData}" style="border:1px solid #ddd;border-radius:4px;margin-top:4px;" height="80"></div>
   <div style="margin-top:16px;text-align:center;"><button onclick="window.print()" style="padding:8px 20px;background:#1a6e3c;color:#fff;border:none;border-radius:6px;font-size:13px;cursor:pointer;">Imprimir / Guardar PDF</button></div>
   </body></html>`;
+}
+ 
+function generarPDFChecklist(html){
   const win=window.open('','_blank');
   win.document.write(html);
   win.document.close();
