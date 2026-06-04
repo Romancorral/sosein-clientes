@@ -953,9 +953,7 @@ async function guardarChecklist(){
     const obsInterior=document.getElementById('obs-interior').value;
     const obsMecanico=document.getElementById('obs-mecanico').value;
     const obsSeguridad=document.getElementById('obs-seguridad').value;
-    const firmaCanvas=document.getElementById('firma-canvas');
-    const firmaComprimida=firmaCanvas.toDataURL('image/jpeg',0.3);
-    await apiPost({action:'saveChecklist',id:nextChkId++,fecha,responsable:resp,equipo,exterior,interior,mecanico,seguridad,obsExterior,obsInterior,obsMecanico,obsSeguridad,firma:firmaComprimida});
+    await apiPost({action:'saveChecklist',id:nextChkId++,fecha,responsable:resp,equipo,exterior,interior,mecanico,seguridad,obsExterior,obsInterior,obsMecanico,obsSeguridad});
     showMsg('msg-checklist');
     limpiarChecklist();
   }catch(e){showMsg('err-checklist');}
