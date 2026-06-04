@@ -322,7 +322,7 @@ tr:hover td{background:#fafaf8;}
   <!-- CHECKLIST -->
   <div id="tab-checklist" class="section">
     <div class="section-title">Revisión periódica de vehículo</div>
-    <div id="msg-checklist" class="success-msg">Revisión guardada correctamente.</div>
+    <div id="msg-checklist" class="success-msg">✓ Revisión guardada y PDF generado en Google Drive.</div>
     <div id="err-checklist" class="error-msg">Completa todos los campos e ítems.</div>
     <div class="form-card">
       <div class="form-grid three">
@@ -954,9 +954,6 @@ async function guardarChecklist(){
     const obsMecanico=document.getElementById('obs-mecanico').value;
     const obsSeguridad=document.getElementById('obs-seguridad').value;
     await apiPost({action:'saveChecklist',id:nextChkId++,fecha,responsable:resp,equipo,exterior,interior,mecanico,seguridad,obsExterior,obsInterior,obsMecanico,obsSeguridad});
-    const htmlPDF=generarHTMLChecklist(resp,equipo,fecha,exterior,interior,mecanico,seguridad,obsExterior,obsInterior,obsMecanico,obsSeguridad);
-    generarPDFChecklist(htmlPDF);
-    try{await apiPost({action:'savePDF',equipo,fecha,html:htmlPDF});}catch(e){console.log('Error guardando en Drive',e);}
     showMsg('msg-checklist');
     limpiarChecklist();
   }catch(e){showMsg('err-checklist');}
