@@ -953,7 +953,16 @@ async function guardarChecklist(){
     const obsInterior=document.getElementById('obs-interior').value;
     const obsMecanico=document.getElementById('obs-mecanico').value;
     const obsSeguridad=document.getElementById('obs-seguridad').value;
-    await apiPost({action:'saveChecklist',id:nextChkId++,fecha,responsable:resp,equipo,exterior,interior,mecanico,seguridad,obsExterior,obsInterior,obsMecanico,obsSeguridad});
+    const firmaCanvas = document.getElementById('firma-canvas');
+    const firmaTemp = document.createElement('canvas');
+    firmaTemp.width = firmaCanvas.width;
+    firmaTemp.height = firmaCanvas.height;
+    const firmaCtxTemp = firmaTemp.getContext('2d');
+    firmaCtxTemp.fillStyle = '#ffffff';
+    firmaCtxTemp.fillRect(0, 0, firmaTemp.width, firmaTemp.height);
+    firmaCtxTemp.drawImage(firmaCanvas, 0, 0);
+    const firma = firmaTemp.toDataURL('image/png');
+    await apiPost({action:'saveChecklist',id:nextChkId++,fecha,responsable:resp,equipo,exterior,interior,mecanico,seguridad,obsExterior,obsInterior,obsMecanico,obsSeguridad,firma});
     showMsg('msg-checklist');
     limpiarChecklist();
   }catch(e){showMsg('err-checklist');}
