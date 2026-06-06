@@ -962,7 +962,6 @@ function limpiarChecklist(){
   document.getElementById('chk-equipo').value='';
   document.getElementById('chk-fecha').value=hoy;
   chkSecciones.forEach(s=>{const el=document.getElementById('obs-'+s.id);if(el)el.value='';});
-  limpiarFirma();
   renderChecklist();
   document.getElementById('err-checklist').style.display='none';
   if(currentRole==='conductor'&&currentUser){
