@@ -333,11 +333,7 @@ tr:hover td{background:#fafaf8;}
       </div>
     </div>
     <div id="chk-secciones"></div>
-    <div class="form-card">
-      <div class="section-title" style="font-size:14px;margin-bottom:10px;">Firma del responsable</div>
-      <canvas id="firma-canvas" class="firma-canvas" height="120"></canvas>
-      <div style="margin-top:8px;"><button class="btn-sm" onclick="limpiarFirma()">Limpiar firma</button></div>
-    </div>
+ 
     <div style="display:flex;gap:10px;margin-top:1rem;">
       <button class="btn-green" id="btn-guardar-chk" onclick="guardarChecklist()">Guardar y generar PDF</button>
       <button class="btn-sm" onclick="limpiarChecklist()">Limpiar formulario</button>
@@ -952,7 +948,6 @@ function renderChecklist(){
       </div>
     </div>
   `).join('');
-  initFirma();
 }
  
 function setChkEstado(num,estado,btn){
@@ -1000,21 +995,7 @@ async function guardarChecklist(){
     const obsInterior=document.getElementById('obs-interior').value;
     const obsMecanico=document.getElementById('obs-mecanico').value;
     const obsSeguridad=document.getElementById('obs-seguridad').value;
-    const firmaCanvas = document.getElementById('firma-canvas');
-    const firmaTemp = document.createElement('canvas');
-    firmaTemp.width = firmaCanvas.width;
-    firmaTemp.height = firmaCanvas.height;
-    const firmaCtxTemp = firmaTemp.getContext('2d');
-    firmaCtxTemp.fillStyle = '#ffffff';
-    firmaCtxTemp.fillRect(0, 0, firmaTemp.width, firmaTemp.height);
-    firmaCtxTemp.drawImage(firmaCanvas, 0, 0);
-    const firmaDataURL = firmaTemp.toDataURL('image/png');
-    let firmaURL = '';
-    try {
-      const nombreFirma = 'CheckList_' + equipo.replace(/[^a-zA-Z0-9]/g,'_') + '_' + fecha;
-      firmaURL = await subirFirmaDrive(firmaDataURL, nombreFirma);
-    } catch(e) { console.log('Error subiendo firma:', e); }
-    await apiPost({action:'saveChecklist',id:nextChkId++,fecha,responsable:resp,equipo,exterior,interior,mecanico,seguridad,obsExterior,obsInterior,obsMecanico,obsSeguridad,firma:firmaURL});
+    await apiPost({action:'saveChecklist',id:nextChkId++,fecha,responsable:resp,equipo,exterior,interior,mecanico,seguridad,obsExterior,obsInterior,obsMecanico,obsSeguridad});
     showMsg('msg-checklist');
     limpiarChecklist();
   }catch(e){showMsg('err-checklist');}
@@ -1047,30 +1028,7 @@ function generarPDFChecklist(html){
   win.document.close();
 }
  
-// FIRMA
-let firmaCanvas,firmaCtx,firmaDrawing=false,firmaLastX=0,firmaLastY=0;
-function initFirma(){
-  firmaCanvas=document.getElementById('firma-canvas');
-  if(!firmaCanvas)return;
-  firmaCanvas.width=firmaCanvas.offsetWidth||600;
-  firmaCtx=firmaCanvas.getContext('2d');
-  firmaCtx.strokeStyle='#1a1a1a';firmaCtx.lineWidth=2;firmaCtx.lineCap='round';
-  firmaCanvas.onmousedown=e=>{firmaDrawing=true;[firmaLastX,firmaLastY]=getPos(e,firmaCanvas);};
-  firmaCanvas.onmousemove=e=>{if(!firmaDrawing)return;const[x,y]=getPos(e,firmaCanvas);firmaCtx.beginPath();firmaCtx.moveTo(firmaLastX,firmaLastY);firmaCtx.lineTo(x,y);firmaCtx.stroke();[firmaLastX,firmaLastY]=[x,y];};
-  firmaCanvas.onmouseup=()=>firmaDrawing=false;
-  firmaCanvas.onmouseleave=()=>firmaDrawing=false;
-  firmaCanvas.ontouchstart=e=>{e.preventDefault();firmaDrawing=true;[firmaLastX,firmaLastY]=getPos(e,firmaCanvas);};
-  firmaCanvas.ontouchmove=e=>{e.preventDefault();if(!firmaDrawing)return;const[x,y]=getPos(e,firmaCanvas);firmaCtx.beginPath();firmaCtx.moveTo(firmaLastX,firmaLastY);firmaCtx.lineTo(x,y);firmaCtx.stroke();[firmaLastX,firmaLastY]=[x,y];};
-  firmaCanvas.ontouchend=()=>firmaDrawing=false;
-}
-function getPos(e,canvas){
-  const rect=canvas.getBoundingClientRect();
-  const scaleX=canvas.width/rect.width;
-  const scaleY=canvas.height/rect.height;
-  if(e.touches)return[(e.touches[0].clientX-rect.left)*scaleX,(e.touches[0].clientY-rect.top)*scaleY];
-  return[(e.clientX-rect.left)*scaleX,(e.clientY-rect.top)*scaleY];
-}
-function limpiarFirma(){if(firmaCtx)firmaCtx.clearRect(0,0,firmaCanvas.width,firmaCanvas.height);}
+ 
  
 function showMsg(id){const el=document.getElementById(id);el.style.display='block';setTimeout(()=>el.style.display='none',2500);}
  
