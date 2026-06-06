@@ -998,7 +998,7 @@ async function guardarChecklist(){
     await apiPost({action:'saveChecklist',id:nextChkId++,fecha,responsable:resp,equipo,exterior,interior,mecanico,seguridad,obsExterior,obsInterior,obsMecanico,obsSeguridad});
     showMsg('msg-checklist');
     limpiarChecklist();
-  }catch(e){showMsg('err-checklist');}
+  }catch(e){console.log('Error:',e);}
   btn.disabled=false;btn.innerHTML='Guardar y generar PDF';
 }
  
