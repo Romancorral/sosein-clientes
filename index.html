@@ -361,16 +361,37 @@ tr:hover td{background:#fafaf8;}
  
 <!-- MODAL EDITAR RETIRO -->
 <div class="modal-overlay" id="modal-retiro">
-  <div class="modal">
+  <div class="modal" style="width:520px;">
     <div class="modal-title">Editar retiro</div>
-    <div class="field" style="margin-bottom:10px;"><label>Cliente</label><select id="modal-r-cliente" style="width:100%;font-size:13px;padding:8px 11px;border-radius:8px;border:1px solid #e0e0da;background:#fff;color:#1a1a1a;font-family:'DM Sans',sans-serif;"></select></div>
-    <div class="field" style="margin-bottom:10px;"><label>Fecha</label><input id="modal-r-fecha" type="date" style="width:100%;font-size:13px;padding:8px 11px;border-radius:8px;border:1px solid #e0e0da;background:#fff;color:#1a1a1a;font-family:'DM Sans',sans-serif;"></div>
-    <div class="field" style="margin-bottom:10px;"><label>Destino</label>
-      <select id="modal-r-destino" style="width:100%;font-size:13px;padding:8px 11px;border-radius:8px;border:1px solid #e0e0da;background:#fff;color:#1a1a1a;font-family:'DM Sans',sans-serif;">
-        <option>Recycling</option><option>Confinor</option><option>Crowan</option><option>Otro</option>
-      </select>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+      <div class="field"><label>Cliente</label><select id="modal-r-cliente" style="font-size:13px;padding:8px 11px;border-radius:8px;border:1px solid #e0e0da;background:#fff;color:#1a1a1a;font-family:'DM Sans',sans-serif;width:100%;"></select></div>
+      <div class="field"><label>Fecha</label><input id="modal-r-fecha" type="date" style="font-size:13px;padding:8px 11px;border-radius:8px;border:1px solid #e0e0da;background:#fff;color:#1a1a1a;font-family:'DM Sans',sans-serif;width:100%;"></div>
     </div>
-    <div class="field" style="margin-bottom:10px;"><label>Notas</label><input id="modal-r-notas" type="text" style="width:100%;font-size:13px;padding:8px 11px;border-radius:8px;border:1px solid #e0e0da;background:#fff;color:#1a1a1a;font-family:'DM Sans',sans-serif;"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+      <div class="field"><label>Destino</label>
+        <select id="modal-r-destino" style="font-size:13px;padding:8px 11px;border-radius:8px;border:1px solid #e0e0da;background:#fff;color:#1a1a1a;font-family:'DM Sans',sans-serif;width:100%;">
+          <option>Recycling</option><option>Confinor</option><option>Crowan</option><option>Otro</option>
+        </select>
+      </div>
+      <div class="field"><label>Notas</label><input id="modal-r-notas" type="text" style="font-size:13px;padding:8px 11px;border-radius:8px;border:1px solid #e0e0da;background:#fff;color:#1a1a1a;font-family:'DM Sans',sans-serif;width:100%;"></div>
+    </div>
+    <div style="font-size:12px;font-weight:500;color:#666;margin-bottom:8px;">Residuos</div>
+    <div style="border:1px solid #e8e8e4;border-radius:10px;margin-bottom:10px;overflow:hidden;">
+      <div style="display:grid;grid-template-columns:1fr 70px 90px 30px;gap:6px;padding:7px 10px;background:#fafaf8;font-size:11px;color:#888;font-weight:500;text-transform:uppercase;letter-spacing:0.4px;border-bottom:1px solid #f0f0ec;">
+        <span>Tipo</span><span>Cant.</span><span>Unidad</span><span></span>
+      </div>
+      <div id="modal-items-body"></div>
+      <div style="display:grid;grid-template-columns:1fr 70px 90px 30px;gap:6px;padding:8px 10px;background:#fafaf8;border-top:1px solid #e8e8e4;">
+        <select id="modal-new-tipo" style="font-size:12px;padding:5px 8px;border-radius:7px;border:1px solid #e0e0da;background:#fff;color:#1a1a1a;font-family:'DM Sans',sans-serif;">
+          <option value="">Tipo...</option><option>Filtros de aceite</option><option>Filtros de aire</option><option>EPP contaminado</option><option>Trapos y guaipes</option><option>Sólidos con HC</option><option>Chatarra electrónica</option><option>Tambores vacíos</option><option>Tierra impregnada</option><option>Mangueras hidráulicas</option><option>Aceites usados</option><option>Lubricantes usados</option><option>Baterías</option><option>Lodos</option><option>Otro</option>
+        </select>
+        <input id="modal-new-cantidad" type="number" placeholder="0" min="0" step="0.1" style="font-size:12px;padding:5px 8px;border-radius:7px;border:1px solid #e0e0da;background:#fff;color:#1a1a1a;font-family:'DM Sans',sans-serif;">
+        <select id="modal-new-unidad" style="font-size:12px;padding:5px 8px;border-radius:7px;border:1px solid #e0e0da;background:#fff;color:#1a1a1a;font-family:'DM Sans',sans-serif;">
+          <option>Tambores</option><option>Toneladas</option><option>Pallets</option><option>Litros</option><option>Unidades</option>
+        </select>
+        <button class="btn-add-item" onclick="modalAgregarItem()">+</button>
+      </div>
+    </div>
     <input type="hidden" id="modal-r-id">
     <div class="modal-btns">
       <button class="btn-modal-cancel" onclick="cerrarModalRetiro()">Cancelar</button>
