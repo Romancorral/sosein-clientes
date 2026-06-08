@@ -649,6 +649,34 @@ async function eliminarRetiro(id){
 }
  
 // EDITAR RETIRO
+let modalItems = [];
+ 
+function renderModalItems() {
+  const body = document.getElementById('modal-items-body');
+  if(!modalItems.length){body.innerHTML='<div style="padding:12px;text-align:center;font-size:12px;color:#aaa;">Sin residuos</div>';return;}
+  body.innerHTML = modalItems.map((item,i)=>`
+    <div style="display:grid;grid-template-columns:1fr 70px 90px 30px;gap:6px;align-items:center;padding:7px 10px;border-bottom:1px solid #f0f0ec;">
+      <span style="font-size:12px;">${item.tipo}</span>
+      <span style="font-size:12px;">${item.cantidad}</span>
+      <span style="font-size:12px;color:#666;">${item.unidad}</span>
+      <button class="btn-remove" onclick="modalEliminarItem(${i})">×</button>
+    </div>
+  `).join('');
+}
+ 
+function modalEliminarItem(i){modalItems.splice(i,1);renderModalItems();}
+ 
+function modalAgregarItem(){
+  const tipo=document.getElementById('modal-new-tipo').value;
+  const cantidad=parseFloat(document.getElementById('modal-new-cantidad').value);
+  const unidad=document.getElementById('modal-new-unidad').value;
+  if(!tipo||!cantidad||cantidad<=0){alert("Selecciona tipo y cantidad.");return;}
+  modalItems.push({tipo,cantidad,unidad});
+  document.getElementById('modal-new-tipo').value='';
+  document.getElementById('modal-new-cantidad').value='';
+  renderModalItems();
+}
+ 
 function abrirModalRetiro(id) {
   const r=retiros.find(x=>String(x.id)===String(id));
   if(!r)return;
@@ -658,6 +686,8 @@ function abrirModalRetiro(id) {
   document.getElementById('modal-r-notas').value=r.notas||'';
   const sel=document.getElementById('modal-r-cliente');
   sel.innerHTML=clientes.map(c=>`<option value="${c.id}"${String(c.id)===String(r.clienteId)?' selected':''}>${c.nombre}</option>`).join('');
+  modalItems = Array.isArray(r.items) ? r.items.map(i=>({...i})) : [];
+  renderModalItems();
   document.getElementById('modal-retiro').classList.add('open');
 }
  
@@ -669,9 +699,10 @@ async function guardarEdicionRetiro(){
   const fecha=document.getElementById('modal-r-fecha').value;
   const destino=document.getElementById('modal-r-destino').value;
   const notas=document.getElementById('modal-r-notas').value.trim();
+  if(!modalItems.length){alert("Agrega al menos un residuo.");return;}
   const r=retiros.find(x=>String(x.id)===String(id));
   if(!r)return;
-  r.clienteId=clienteId; r.fecha=fecha; r.destino=destino; r.notas=notas;
+  r.clienteId=clienteId; r.fecha=fecha; r.destino=destino; r.notas=notas; r.items=[...modalItems];
   try{
     await apiPost({action:'deleteRetiro',id});
     await apiPost({action:'saveRetiro',...r});
