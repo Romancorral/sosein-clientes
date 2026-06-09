@@ -632,6 +632,10 @@ function actualizarDestino() {
   if(c&&c.tipo==="Aceites")sel.value="Crowan";
   else if(c&&c.zona==="Copiapó")sel.value="Confinor";
   else if(c)sel.value="Recycling";
+  // Auto-fill encargado generador con contacto del cliente
+  const encargado=document.getElementById("r-encargado");
+  if(c&&c.contacto&&!encargado.value) encargado.value=c.contacto;
+  else if(c&&c.contacto) encargado.value=c.contacto;
 }
  
 function agregarItem() {
