@@ -210,6 +210,7 @@ tr:hover td{background:#fafaf8;}
       <div class="form-grid"><div class="field"><label>Nombre empresa</label><input id="c-nombre" type="text" placeholder="Ej: Minera del Valle"></div><div class="field"><label>RUT</label><input id="c-rut" type="text" placeholder="76.917.791-4"></div></div>
       <div class="form-grid three"><div class="field"><label>Zona</label><select id="c-zona"><option value="">Seleccionar</option><option>Copiapó</option><option>La Serena</option><option>Coquimbo</option><option>Ovalle</option></select></div><div class="field"><label>Tipo de residuo</label><select id="c-tipo"><option value="">Seleccionar</option><option>Sólidos</option><option>Aceites</option><option>Mixto</option></select></div><div class="field"><label>Unidad habitual</label><select id="c-unidad"><option value="">Seleccionar</option><option>Toneladas</option><option>Tambores</option><option>Pallets</option><option>Litros</option></select></div></div>
       <div class="form-grid three"><div class="field"><label>Contacto</label><input id="c-contacto" type="text" placeholder="Nombre contacto"></div><div class="field"><label>Email</label><input id="c-email" type="email" placeholder="email@empresa.cl"></div><div class="field"><label>Teléfono</label><input id="c-telefono" type="text" placeholder="+56 9 ..."></div></div>
+      <div class="form-grid"><div class="field"><label>Dirección del retiro</label><input id="c-direccion" type="text" placeholder="Ej: Ruta 5 Norte km 456"></div></div>
       <button class="btn-primary" id="btn-agregar-cliente" onclick="agregarCliente()">Agregar cliente</button>
     </div>
     <div class="section-title">Clientes registrados</div>
@@ -223,7 +224,8 @@ tr:hover td{background:#fafaf8;}
     <div id="err-retiro" class="error-msg">Error al guardar.</div>
     <div class="form-card">
       <div class="form-grid"><div class="field"><label>Cliente</label><select id="r-cliente" onchange="actualizarDestino()"><option value="">Seleccionar cliente</option></select></div><div class="field"><label>Fecha del retiro</label><input id="r-fecha" type="date"></div></div>
-      <div class="form-grid"><div class="field"><label>Destino</label><select id="r-destino"><option value="">Seleccionar</option><option>Recycling</option><option>Confinor</option><option>Crowan</option><option>Otro</option></select></div><div class="field"><label>Notas (opcional)</label><input id="r-notas" type="text" placeholder="Observaciones"></div></div>
+      <div class="form-grid three"><div class="field"><label>Destino</label><select id="r-destino"><option value="">Seleccionar</option><option>Recycling</option><option>Confinor</option><option>Crowan</option><option>Otro</option></select></div><div class="field"><label>Camión</label><select id="r-camion"><option value="">Seleccionar</option></select></div><div class="field"><label>Chofer encargado</label><select id="r-chofer"><option value="">Seleccionar</option></select></div></div>
+      <div class="form-grid"><div class="field"><label>Encargado generador</label><input id="r-encargado" type="text" placeholder="Nombre del encargado del cliente"></div><div class="field"><label>Notas (opcional)</label><input id="r-notas" type="text" placeholder="Observaciones"></div></div>
       <div style="font-size:13px;font-weight:500;margin-bottom:8px;">Residuos del retiro</div>
       <div class="items-list">
         <div class="item-row header"><span>Tipo de residuo</span><span>Cantidad</span><span>Unidad</span><span></span></div>
@@ -241,7 +243,7 @@ tr:hover td{background:#fafaf8;}
     <div class="filters" style="margin-bottom:0.5rem;">
       <select id="f-retiro-cliente" onchange="renderTablaRetiros()"><option value="">Todos los clientes</option></select>
     </div>
-    <div class="card"><table><thead><tr><th style="width:20%;">Cliente</th><th style="width:10%;">Fecha</th><th style="width:28%;">Residuos</th><th style="width:10%;">Destino</th><th style="width:12%;">Notas</th><th style="width:20%;">Acción</th></tr></thead><tbody id="retiros-tbody"><tr><td colspan="6" class="loading">Cargando...</td></tr></tbody></table></div>
+    <div class="card"><table><thead><tr><th style="width:18%;">Cliente</th><th style="width:9%;">Fecha</th><th style="width:25%;">Residuos</th><th style="width:9%;">Destino</th><th style="width:10%;">Notas</th><th style="width:29%;">Acción</th></tr></thead><tbody id="retiros-tbody"><tr><td colspan="6" class="loading">Cargando...</td></tr></tbody></table></div>
   </div>
  
   <!-- FLOTA -->
@@ -262,7 +264,7 @@ tr:hover td{background:#fafaf8;}
       <div class="form-grid"><div class="field"><label>Km actuales</label><input id="cam-km" type="number" placeholder="Ej: 15914"></div><div class="field"><label>Km próxima mantención</label><input id="cam-proxima" type="number" placeholder="Ej: 20000"></div></div>
       <button class="btn-green" id="btn-agregar-camion" onclick="agregarCamion()">Agregar camión</button>
     </div>
-    <div class="section-title">Responsables</div>
+    <div class="section-title">Responsables (Checklist)</div>
     <div id="msg-resp" class="success-msg">Responsable agregado.</div>
     <div class="form-card">
       <div class="form-grid">
@@ -271,6 +273,15 @@ tr:hover td{background:#fafaf8;}
       </div>
     </div>
     <div class="card"><table><thead><tr><th style="width:70%;">Nombre</th><th style="width:30%;">Acción</th></tr></thead><tbody id="responsables-tbody"><tr><td colspan="2" class="loading">Cargando...</td></tr></tbody></table></div>
+    <div class="section-title" style="margin-top:1.5rem;">Choferes (Actas de retiro)</div>
+    <div id="msg-chofer" class="success-msg">Chofer agregado.</div>
+    <div class="form-card">
+      <div class="form-grid">
+        <div class="field"><label>Nombre del chofer</label><input id="chofer-nombre" type="text" placeholder="Ej: Juan Pérez"></div>
+        <div style="display:flex;align-items:flex-end;"><button class="btn-green" id="btn-agregar-chofer" onclick="agregarChofer()">Agregar chofer</button></div>
+      </div>
+    </div>
+    <div class="card"><table><thead><tr><th style="width:70%;">Nombre</th><th style="width:30%;">Acción</th></tr></thead><tbody id="choferes-tbody"><tr><td colspan="2" class="loading">Cargando...</td></tr></tbody></table></div>
   </div>
  
   <!-- COTIZADOR -->
@@ -341,6 +352,45 @@ tr:hover td{background:#fafaf8;}
 </div>
 </div>
  
+<!-- MODAL EDITAR CLIENTE -->
+<div class="modal-overlay" id="modal-cliente">
+  <div class="modal" style="width:500px;">
+    <div class="modal-title">Editar cliente</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+      <div class="field"><label>Nombre empresa</label><input id="modal-c-nombre" type="text" style="width:100%;font-size:13px;padding:8px 11px;border-radius:8px;border:1px solid #e0e0da;background:#fff;color:#1a1a1a;font-family:'DM Sans',sans-serif;"></div>
+      <div class="field"><label>RUT</label><input id="modal-c-rut" type="text" style="width:100%;font-size:13px;padding:8px 11px;border-radius:8px;border:1px solid #e0e0da;background:#fff;color:#1a1a1a;font-family:'DM Sans',sans-serif;"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px;">
+      <div class="field"><label>Zona</label>
+        <select id="modal-c-zona" style="width:100%;font-size:13px;padding:8px 11px;border-radius:8px;border:1px solid #e0e0da;background:#fff;color:#1a1a1a;font-family:'DM Sans',sans-serif;">
+          <option>Copiapó</option><option>La Serena</option><option>Coquimbo</option><option>Ovalle</option>
+        </select>
+      </div>
+      <div class="field"><label>Tipo</label>
+        <select id="modal-c-tipo" style="width:100%;font-size:13px;padding:8px 11px;border-radius:8px;border:1px solid #e0e0da;background:#fff;color:#1a1a1a;font-family:'DM Sans',sans-serif;">
+          <option>Sólidos</option><option>Aceites</option><option>Mixto</option>
+        </select>
+      </div>
+      <div class="field"><label>Unidad</label>
+        <select id="modal-c-unidad" style="width:100%;font-size:13px;padding:8px 11px;border-radius:8px;border:1px solid #e0e0da;background:#fff;color:#1a1a1a;font-family:'DM Sans',sans-serif;">
+          <option>Toneladas</option><option>Tambores</option><option>Pallets</option><option>Litros</option>
+        </select>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px;">
+      <div class="field"><label>Contacto</label><input id="modal-c-contacto" type="text" style="width:100%;font-size:13px;padding:8px 11px;border-radius:8px;border:1px solid #e0e0da;background:#fff;color:#1a1a1a;font-family:'DM Sans',sans-serif;"></div>
+      <div class="field"><label>Email</label><input id="modal-c-email" type="email" style="width:100%;font-size:13px;padding:8px 11px;border-radius:8px;border:1px solid #e0e0da;background:#fff;color:#1a1a1a;font-family:'DM Sans',sans-serif;"></div>
+      <div class="field"><label>Teléfono</label><input id="modal-c-telefono" type="text" style="width:100%;font-size:13px;padding:8px 11px;border-radius:8px;border:1px solid #e0e0da;background:#fff;color:#1a1a1a;font-family:'DM Sans',sans-serif;"></div>
+    </div>
+    <div class="field" style="margin-bottom:10px;"><label>Dirección</label><input id="modal-c-direccion" type="text" style="width:100%;font-size:13px;padding:8px 11px;border-radius:8px;border:1px solid #e0e0da;background:#fff;color:#1a1a1a;font-family:'DM Sans',sans-serif;"></div>
+    <input type="hidden" id="modal-c-id">
+    <div class="modal-btns">
+      <button class="btn-modal-cancel" onclick="cerrarModalCliente()">Cancelar</button>
+      <button class="btn-modal-ok" onclick="guardarEdicionCliente()">Guardar</button>
+    </div>
+  </div>
+</div>
+ 
 <!-- MODAL ODÓMETRO -->
 <div class="modal-overlay" id="modal-km">
   <div class="modal">
@@ -407,8 +457,8 @@ const hoy = new Date().toISOString().split('T')[0];
  
 let currentUser = null;
 let currentRole = null;
-let clientes=[], retiros=[], camiones=[], responsables=[];
-let nextId=1, nextRetiroId=1, nextCamionId=1, nextRespId=1, nextChkId=1;
+let clientes=[], retiros=[], camiones=[], responsables=[], choferes=[];
+let nextId=1, nextRetiroId=1, nextCamionId=1, nextRespId=1, nextChkId=1, nextChoferId=1, nextFolio=1;
 let itemsActuales=[], camionSeleccionado=null;
 let chkEstados={};
  
@@ -423,17 +473,21 @@ async function apiPost(data) {
  
 async function cargarDatos() {
   try {
-    const [c, r, cam, resp] = await Promise.all([apiGet('getClientes'), apiGet('getRetiros'), apiGet('getCamiones'), apiGet('getResponsables')]);
+    const [c, r, cam, resp, chof] = await Promise.all([apiGet('getClientes'), apiGet('getRetiros'), apiGet('getCamiones'), apiGet('getResponsables'), apiGet('getChoferes')]);
     clientes = c.filter(x=>x.id);
     retiros = r.filter(x=>x.id);
     camiones = Array.isArray(cam) ? cam.filter(x=>x.id) : [];
     responsables = Array.isArray(resp) ? resp.filter(x=>x.id) : [];
+    choferes = Array.isArray(chof) ? chof.filter(x=>x.id) : [];
     if(clientes.length) nextId = Math.max(...clientes.map(x=>parseInt(x.id)||0))+1;
     if(retiros.length) nextRetiroId = Math.max(...retiros.map(x=>parseInt(x.id)||0))+1;
     if(camiones.length) nextCamionId = Math.max(...camiones.map(x=>parseInt(x.id)||0))+1;
     if(responsables.length) nextRespId = Math.max(...responsables.map(x=>parseInt(x.id)||0))+1;
-    renderPanel(); renderFlota(); renderResponsables();
+    if(choferes.length) nextChoferId = Math.max(...choferes.map(x=>parseInt(x.id)||0))+1;
+    if(retiros.length) nextFolio = Math.max(...retiros.map(x=>parseInt(x.folio)||0))+1;
+    renderPanel(); renderFlota(); renderResponsables(); renderChoferes();
     actualizarSelectsChecklist();
+    actualizarSelectsRetiro();
     actualizarCotCamTabs();
     calcularCot();
   } catch(e) {
@@ -532,7 +586,7 @@ function renderClientes() {
   actualizarSelectClientes();
   const tbody=document.getElementById("clientes-tbody");
   if(!clientes.length){tbody.innerHTML=`<tr><td colspan="5" class="empty">Sin clientes</td></tr>`;return;}
-  tbody.innerHTML=clientes.map(c=>`<tr><td><div style="font-weight:500;">${c.nombre}</div><div style="font-size:11px;color:#888;">${c.rut||''}</div></td><td style="font-size:12px;">${c.zona}</td><td>${tipoBadge(c.tipo)}</td><td><div style="font-size:12px;">${c.contacto||'—'}</div><div style="font-size:11px;color:#888;">${c.email||''}</div></td><td><button class="btn-sm" onclick="irARetiro(${c.id})">+ Retiro</button><button class="btn-danger-sm" style="margin-left:4px;" onclick="eliminarCliente(${c.id})">Eliminar</button></td></tr>`).join("");
+  tbody.innerHTML=clientes.map(c=>`<tr><td><div style="font-weight:500;">${c.nombre}</div><div style="font-size:11px;color:#888;">${c.rut||''}</div></td><td style="font-size:12px;">${c.zona}</td><td>${tipoBadge(c.tipo)}</td><td><div style="font-size:12px;">${c.contacto||'—'}</div><div style="font-size:11px;color:#888;">${c.email||''}</div></td><td><button class="btn-sm" onclick="irARetiro(${c.id})" style="margin-right:4px;">+ Retiro</button><button class="btn-sm" onclick="abrirModalCliente(${c.id})" style="margin-right:4px;">Editar</button><button class="btn-danger-sm" onclick="eliminarCliente(${c.id})">Eliminar</button></td></tr>`).join("");
 }
  
 function renderRetiros() {
@@ -555,7 +609,7 @@ function renderTablaRetiros() {
   tbody.innerHTML=sorted.map(r=>{
     const c=clientes.find(x=>String(x.id)===String(r.clienteId));
     const items=Array.isArray(r.items)?r.items:[];
-    return`<tr><td style="font-weight:500;">${c?c.nombre:"—"}</td><td style="font-size:12px;">${r.fecha}</td><td class="retiro-items">${items.map(i=>`${i.tipo} (${i.cantidad} ${i.unidad})`).join(" · ")}</td><td><span class="badge badge-gray">${r.destino}</span></td><td style="font-size:12px;color:#666;">${r.notas||"—"}</td><td><button class="btn-sm" onclick="abrirModalRetiro('${r.id}')" style="margin-right:4px;">Editar</button><button class="btn-danger-sm" onclick="eliminarRetiro('${r.id}')">Eliminar</button></td></tr>`;
+    return`<tr><td style="font-weight:500;">${c?c.nombre:"—"}</td><td style="font-size:12px;">${r.fecha}</td><td class="retiro-items">${items.map(i=>`${i.tipo} (${i.cantidad} ${i.unidad})`).join(" · ")}</td><td><span class="badge badge-gray">${r.destino}</span></td><td style="font-size:12px;color:#666;">${r.notas||"—"}</td><td style="white-space:nowrap;"><button class="btn-sm" onclick="generarActa('${r.id}')" style="margin-right:4px;background:#1a4a6b;color:#fff;border-color:#1a4a6b;">Acta</button><button class="btn-sm" onclick="abrirModalRetiro('${r.id}')" style="margin-right:4px;">Editar</button><button class="btn-danger-sm" onclick="eliminarRetiro('${r.id}')">Eliminar</button></td></tr>`;
   }).join("");
 }
  
@@ -603,14 +657,15 @@ async function agregarCliente() {
   const contacto=document.getElementById("c-contacto").value.trim();
   const email=document.getElementById("c-email").value.trim();
   const telefono=document.getElementById("c-telefono").value.trim();
+  const direccion=document.getElementById("c-direccion").value.trim();
   if(!nombre||!zona||!tipo){alert("Completa nombre, zona y tipo.");return;}
   const btn=document.getElementById("btn-agregar-cliente");
   btn.disabled=true;btn.innerHTML='<span class="spinner"></span>Guardando...';
   try{
-    const cliente={id:nextId++,nombre,rut,zona,tipo,unidad,contacto,email,telefono};
+    const cliente={id:nextId++,nombre,rut,zona,tipo,unidad,contacto,email,telefono,direccion};
     await apiPost({action:'saveCliente',...cliente});
     clientes.push(cliente);
-    ["c-nombre","c-rut","c-contacto","c-email","c-telefono"].forEach(id=>document.getElementById(id).value="");
+    ["c-nombre","c-rut","c-contacto","c-email","c-telefono","c-direccion"].forEach(id=>document.getElementById(id).value="");
     ["c-zona","c-tipo","c-unidad"].forEach(id=>document.getElementById(id).value="");
     showMsg("msg-cliente");renderClientes();renderPanel();
   }catch(e){showMsg("err-cliente");}
@@ -628,15 +683,20 @@ async function guardarRetiro(){
   const fecha=document.getElementById("r-fecha").value;
   const destino=document.getElementById("r-destino").value;
   const notas=document.getElementById("r-notas").value.trim();
+  const camion=document.getElementById("r-camion").value;
+  const chofer=document.getElementById("r-chofer").value;
+  const encargadoGenerador=document.getElementById("r-encargado").value.trim();
+  const folio=nextFolio++;
   if(!clienteId||!fecha||!destino){alert("Selecciona cliente, fecha y destino.");return;}
   if(!itemsActuales.length){alert("Agrega al menos un residuo.");return;}
   const btn=document.getElementById("btn-guardar-retiro");
   btn.disabled=true;btn.innerHTML='<span class="spinner"></span>Guardando...';
   try{
-    const retiro={id:nextRetiroId++,clienteId,fecha,items:[...itemsActuales],destino,notas};
+    const retiro={id:nextRetiroId++,clienteId,fecha,items:[...itemsActuales],destino,notas,camion,chofer,encargadoGenerador,folio};
     await apiPost({action:'saveRetiro',...retiro});
     retiros.push(retiro);itemsActuales=[];renderItemsActuales();
     document.getElementById("r-cliente").value="";document.getElementById("r-destino").value="";document.getElementById("r-notas").value="";
+    document.getElementById("r-camion").value="";document.getElementById("r-chofer").value="";document.getElementById("r-encargado").value="";
     showMsg("msg-retiro");renderRetiros();renderPanel();
   }catch(e){showMsg("err-retiro");}
   btn.disabled=false;btn.innerHTML='Guardar retiro';
@@ -1041,7 +1101,117 @@ async function guardarChecklist(){
   btn.disabled=false;btn.innerHTML='Guardar y generar PDF';
 }
  
+// EDITAR CLIENTE
+function abrirModalCliente(id) {
+  const c=clientes.find(x=>String(x.id)===String(id));
+  if(!c)return;
+  document.getElementById('modal-c-id').value=id;
+  document.getElementById('modal-c-nombre').value=c.nombre||'';
+  document.getElementById('modal-c-rut').value=c.rut||'';
+  document.getElementById('modal-c-zona').value=c.zona||'';
+  document.getElementById('modal-c-tipo').value=c.tipo||'';
+  document.getElementById('modal-c-unidad').value=c.unidad||'';
+  document.getElementById('modal-c-contacto').value=c.contacto||'';
+  document.getElementById('modal-c-email').value=c.email||'';
+  document.getElementById('modal-c-telefono').value=c.telefono||'';
+  document.getElementById('modal-c-direccion').value=c.direccion||'';
+  document.getElementById('modal-cliente').classList.add('open');
+}
+ 
+function cerrarModalCliente(){document.getElementById('modal-cliente').classList.remove('open');}
+ 
+async function guardarEdicionCliente(){
+  const id=document.getElementById('modal-c-id').value;
+  const c=clientes.find(x=>String(x.id)===String(id));
+  if(!c)return;
+  c.nombre=document.getElementById('modal-c-nombre').value.trim();
+  c.rut=document.getElementById('modal-c-rut').value.trim();
+  c.zona=document.getElementById('modal-c-zona').value;
+  c.tipo=document.getElementById('modal-c-tipo').value;
+  c.unidad=document.getElementById('modal-c-unidad').value;
+  c.contacto=document.getElementById('modal-c-contacto').value.trim();
+  c.email=document.getElementById('modal-c-email').value.trim();
+  c.telefono=document.getElementById('modal-c-telefono').value.trim();
+  c.direccion=document.getElementById('modal-c-direccion').value.trim();
+  try{
+    await apiPost({action:'deleteCliente',id});
+    await apiPost({action:'saveCliente',...c});
+    cerrarModalCliente();
+    renderClientes();renderPanel();
+    showMsg('msg-cliente');
+  }catch(e){alert("Error al guardar.");}
+}
+ 
 function showMsg(id){const el=document.getElementById(id);el.style.display='block';setTimeout(()=>el.style.display='none',2500);}
+ 
+// SELECTS RETIRO
+function actualizarSelectsRetiro(){
+  const selCam=document.getElementById("r-camion");
+  const selChof=document.getElementById("r-chofer");
+  if(!selCam||!selChof)return;
+  selCam.innerHTML=`<option value="">Seleccionar camión</option>`+camiones.map(c=>`<option value="${c.patente}">${c.patente} — ${c.marca} ${c.modelo}</option>`).join('');
+  selChof.innerHTML=`<option value="">Seleccionar chofer</option>`+choferes.map(c=>`<option value="${c.nombre}">${c.nombre}</option>`).join('');
+}
+ 
+// CHOFERES
+function renderChoferes(){
+  const tbody=document.getElementById('choferes-tbody');
+  if(!tbody)return;
+  if(!choferes.length){tbody.innerHTML=`<tr><td colspan="2" class="empty">Sin choferes registrados</td></tr>`;return;}
+  tbody.innerHTML=choferes.map(r=>`<tr><td style="font-weight:500;">${r.nombre}</td><td><button class="btn-danger-sm" onclick="eliminarChofer('${r.id}')">Eliminar</button></td></tr>`).join('');
+}
+ 
+async function agregarChofer(){
+  const nombre=document.getElementById("chofer-nombre").value.trim();
+  if(!nombre){alert("Ingresa el nombre del chofer.");return;}
+  const btn=document.getElementById("btn-agregar-chofer");
+  btn.disabled=true;
+  try{
+    const chofer={id:nextChoferId++,nombre};
+    await apiPost({action:'saveChofer',...chofer});
+    choferes.push(chofer);
+    document.getElementById("chofer-nombre").value="";
+    showMsg("msg-chofer");renderChoferes();actualizarSelectsRetiro();
+  }catch(e){alert("Error al guardar.");}
+  btn.disabled=false;
+}
+ 
+async function eliminarChofer(id){
+  if(!confirm("¿Eliminar este chofer?"))return;
+  try{await apiPost({action:'deleteChofer',id});choferes=choferes.filter(c=>String(c.id)!==String(id));renderChoferes();actualizarSelectsRetiro();}
+  catch(e){alert("Error al eliminar.");}
+}
+ 
+// GENERAR ACTA
+async function generarActa(id){
+  const r=retiros.find(x=>String(x.id)===String(id));
+  if(!r)return;
+  const c=clientes.find(x=>String(x.id)===String(r.clienteId));
+  const btn=event.target;
+  btn.disabled=true;btn.textContent='...';
+  try{
+    await apiPost({
+      action:'saveActa',
+      folio:r.folio||id,
+      fecha:r.fecha,
+      clienteNombre:c?c.nombre:'—',
+      clienteRut:c?c.rut:'—',
+      clienteDireccion:c?c.direccion:'—',
+      clienteTelefono:c?c.telefono:'—',
+      clienteEmail:c?c.email:'—',
+      items:r.items,
+      almacenamiento:r.items?r.items.map(i=>i.unidad).filter((v,i,a)=>a.indexOf(v)===i).join(', '):'—',
+      camion:r.camion||'—',
+      chofer:r.chofer||'—',
+      encargadoGenerador:r.encargadoGenerador||'—',
+      destino:r.destino
+    });
+    showMsg('msg-retiro');
+    document.getElementById('msg-retiro').textContent='✓ Acta generada en Google Drive.';
+    setTimeout(()=>document.getElementById('msg-retiro').textContent='Retiro registrado.',100);
+  }catch(e){alert("Error al generar acta.");}
+  btn.disabled=false;btn.textContent='Acta';
+}
  
 cargarResponsablesLogin();
 </script>
