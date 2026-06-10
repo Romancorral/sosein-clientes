@@ -1312,7 +1312,7 @@ async function generarActa(id){
   const btn=event.target;
   btn.disabled=true;btn.textContent='...';
   try{
-    await apiPost({
+    const actaData = {
       action:'saveActa',
       folio:r.folio||id,
       fecha:r.fecha,
@@ -1327,10 +1327,11 @@ async function generarActa(id){
       chofer:r.chofer||'—',
       encargadoGenerador:r.encargadoGenerador||'—',
       destino:r.destino
-    });
+    };
+    const res = await apiPost(actaData);
+    if(res.url) r.actaUrl = res.url;
     showMsg('msg-retiro');
-    document.getElementById('msg-retiro').textContent='✓ Acta generada en Google Drive.';
-    setTimeout(()=>document.getElementById('msg-retiro').textContent='Retiro registrado.',100);
+    renderTablaRetiros();
   }catch(e){alert("Error al generar acta.");}
   btn.disabled=false;btn.textContent='Acta';
 }
