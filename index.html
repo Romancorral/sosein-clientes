@@ -1148,6 +1148,7 @@ async function guardarEdicionCliente(){
  
 function abrirActaVentana(d) {
   const folio = String(d.folio).padStart(4, '0');
+  const link = document.createElement('a');
   const items = Array.isArray(d.items) ? d.items : [];
   const solidos = items.filter(i => i.tipo !== 'Aceites usados' && i.tipo !== 'Lubricantes usados');
   const liquidos = items.filter(i => i.tipo === 'Aceites usados' || i.tipo === 'Lubricantes usados');
@@ -1254,9 +1255,12 @@ function abrirActaVentana(d) {
   <button class="btn-print" onclick="window.print()">Imprimir / Guardar PDF</button>
   </body></html>`;
  
-  const win = window.open('', '_blank');
-  win.document.write(html);
-  win.document.close();
+  const blob = new Blob([html], {type: 'text/html'});
+  const url = URL.createObjectURL(blob);
+  link.href = url;
+  link.target = '_blank';
+  link.click();
+  setTimeout(()=>URL.revokeObjectURL(url), 10000);
 }
  
 function showMsg(id){const el=document.getElementById(id);el.style.display='block';setTimeout(()=>el.style.display='none',2500);}
