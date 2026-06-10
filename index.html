@@ -1146,6 +1146,119 @@ async function guardarEdicionCliente(){
   }catch(e){alert("Error al guardar.");}
 }
  
+function abrirActaVentana(d) {
+  const folio = String(d.folio).padStart(4, '0');
+  const items = Array.isArray(d.items) ? d.items : [];
+  const solidos = items.filter(i => i.tipo !== 'Aceites usados' && i.tipo !== 'Lubricantes usados');
+  const liquidos = items.filter(i => i.tipo === 'Aceites usados' || i.tipo === 'Lubricantes usados');
+  const fechaStr = d.fecha ? d.fecha.split('T')[0] : '—';
+ 
+  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Acta Retiro ${folio}</title>
+  <style>
+    body{font-family:Arial,sans-serif;margin:0;color:#1a1a1a;font-size:12px;}
+    td{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
+    .info-label{color:#9ca3af;text-transform:uppercase;font-size:9px;letter-spacing:0.3px;width:130px;padding:3px 0;}
+    .info-value{font-weight:600;font-size:11px;padding:3px 0;}
+    .res-label{font-size:9px;color:#9ca3af;text-transform:uppercase;letter-spacing:0.3px;margin-bottom:5px;margin-top:10px;}
+    .res-label:first-child{margin-top:0;}
+    .tag{display:inline-block;font-size:10px;font-weight:600;padding:3px 10px;border-radius:99px;margin:2px;}
+    .tag-blue{background-color:#dbeafe;color:#1e3a8a;}
+    .tag-green{background-color:#dcfce7;color:#14532d;}
+    .btn-print{display:block;margin:20px auto;padding:10px 28px;background:#1a6e3c;color:#fff;border:none;border-radius:6px;font-size:14px;font-weight:700;cursor:pointer;font-family:Arial,sans-serif;}
+    @media print{.btn-print{display:none;}}
+  </style></head><body>
+  <button class="btn-print" onclick="window.print()">Imprimir / Guardar PDF</button>
+  <table width="100%" cellpadding="0" cellspacing="0" bgcolor="#1a4a6b">
+    <tr>
+      <td bgcolor="#1a4a6b" style="padding:20px 24px;vertical-align:middle;background-color:#1a4a6b;">
+        <div style="font-size:15px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;color:#fff;margin-bottom:2px;">Acta de Retiro de Residuos</div>
+        <div style="font-size:13px;font-weight:500;color:#fff;margin-bottom:6px;">Peligrosos y No Peligrosos</div>
+        <div style="font-size:10px;color:#bfdbfe;margin-bottom:1px;">Sociedad de Servicios Ecologicos Industriales SPA | RUT: 77.460.437-5</div>
+        <div style="font-size:10px;color:#bfdbfe;">Giro: Recogida de desechos peligrosos | PC 38 Lote 1 Etapa D, Coquimbo</div>
+      </td>
+      <td bgcolor="#1a4a6b" style="padding:20px 24px;text-align:right;vertical-align:middle;background-color:#1a4a6b;width:120px;">
+        <table cellpadding="0" cellspacing="0" align="right"><tr><td bgcolor="#1a6e3c" style="background-color:#1a6e3c;padding:6px 16px;border-radius:4px;">
+          <span style="color:#fff;font-size:11px;font-weight:700;letter-spacing:1px;">SOSEIN</span>
+        </td></tr></table>
+      </td>
+    </tr>
+  </table>
+  <div style="padding:20px 24px;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #e5e7eb;margin-bottom:18px;">
+      <tr>
+        <td bgcolor="#f8fafc" style="background-color:#f8fafc;padding:12px 16px;border-right:1px solid #e5e7eb;width:100px;">
+          <div style="font-size:9px;color:#9ca3af;text-transform:uppercase;margin-bottom:2px;">OT / Folio N</div>
+          <div style="font-size:22px;font-weight:700;color:#1a4a6b;">${folio}</div>
+        </td>
+        <td bgcolor="#f8fafc" style="background-color:#f8fafc;padding:12px 16px;border-right:1px solid #e5e7eb;">
+          <div style="font-size:9px;color:#9ca3af;text-transform:uppercase;margin-bottom:2px;">Fecha</div>
+          <div style="font-size:14px;font-weight:600;">${fechaStr}</div>
+        </td>
+        <td bgcolor="#f8fafc" style="background-color:#f8fafc;padding:12px 16px;">
+          <div style="font-size:9px;color:#9ca3af;text-transform:uppercase;margin-bottom:2px;">Destino</div>
+          <div style="font-size:14px;font-weight:600;">${d.destino||'—'}</div>
+        </td>
+      </tr>
+    </table>
+    <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:14px;">
+      <tr><td bgcolor="#1a4a6b" style="background-color:#1a4a6b;padding:6px 12px;"><span style="color:#fff;font-size:10px;font-weight:700;text-transform:uppercase;">1. Datos del Generador</span></td></tr>
+      <tr><td style="border:1px solid #1a4a6b;border-top:none;padding:12px 14px;">
+        <table width="100%" cellpadding="3">
+          <tr><td class="info-label">Razon social</td><td class="info-value">${d.clienteNombre}</td></tr>
+          <tr><td class="info-label">RUT</td><td class="info-value">${d.clienteRut||'—'}</td></tr>
+          <tr><td class="info-label">Direccion retiro</td><td class="info-value">${d.clienteDireccion||'—'}</td></tr>
+          <tr><td class="info-label">Telefono</td><td class="info-value">${d.clienteTelefono||'—'}</td></tr>
+          <tr><td class="info-label">Correo</td><td class="info-value">${d.clienteEmail||'—'}</td></tr>
+        </table>
+      </td></tr>
+    </table>
+    <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:14px;">
+      <tr><td bgcolor="#1a4a6b" style="background-color:#1a4a6b;padding:6px 12px;"><span style="color:#fff;font-size:10px;font-weight:700;text-transform:uppercase;">2. Tipo de Residuos Retirados</span></td></tr>
+      <tr><td style="border:1px solid #1a4a6b;border-top:none;padding:12px 14px;">
+        <div class="res-label">Residuos liquidos</div>
+        <div>${liquidos.length ? liquidos.map(i=>`<span class="tag tag-blue">${i.tipo} (${i.cantidad} ${i.unidad})</span>`).join('') : '<span style="font-size:11px;color:#9ca3af;">No se hizo retiro de liquidos</span>'}</div>
+        <div class="res-label">Residuos solidos</div>
+        <div>${solidos.length ? solidos.map(i=>`<span class="tag tag-green">${i.tipo} (${i.cantidad} ${i.unidad})</span>`).join('') : '<span style="font-size:11px;color:#9ca3af;">No se hizo retiro de solidos</span>'}</div>
+      </td></tr>
+    </table>
+    <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:14px;">
+      <tr>
+        <td width="49%" style="vertical-align:top;padding-right:6px;">
+          <table width="100%"><tr><td bgcolor="#1a4a6b" style="background-color:#1a4a6b;padding:6px 12px;"><span style="color:#fff;font-size:10px;font-weight:700;text-transform:uppercase;">3. Tipo Almacenamiento</span></td></tr>
+          <tr><td style="border:1px solid #1a4a6b;border-top:none;padding:12px 14px;"><span style="font-size:11px;">${d.almacenamiento||'—'}</span></td></tr></table>
+        </td>
+        <td width="49%" style="vertical-align:top;padding-left:6px;">
+          <table width="100%"><tr><td bgcolor="#1a4a6b" style="background-color:#1a4a6b;padding:6px 12px;"><span style="color:#fff;font-size:10px;font-weight:700;text-transform:uppercase;">4. Transporte</span></td></tr>
+          <tr><td style="border:1px solid #1a4a6b;border-top:none;padding:12px 14px;">
+            <table width="100%" cellpadding="3"><tr><td class="info-label">Patente vehiculo</td><td class="info-value">${d.camion||'—'}</td></tr></table>
+          </td></tr></table>
+        </td>
+      </tr>
+    </table>
+    <table width="100%" cellpadding="0" cellspacing="0">
+      <tr><td bgcolor="#1a4a6b" style="background-color:#1a4a6b;padding:6px 12px;"><span style="color:#fff;font-size:10px;font-weight:700;text-transform:uppercase;">5. Responsables</span></td></tr>
+      <tr><td style="border:1px solid #1a4a6b;border-top:none;padding:12px 14px;">
+        <table width="100%"><tr>
+          <td width="50%" style="padding-right:12px;">
+            <div style="font-size:9px;color:#9ca3af;text-transform:uppercase;margin-bottom:4px;">Encargado del retiro</div>
+            <div style="font-size:12px;font-weight:600;">${d.chofer||'—'}</div>
+          </td>
+          <td width="50%">
+            <div style="font-size:9px;color:#9ca3af;text-transform:uppercase;margin-bottom:4px;">Encargado generador</div>
+            <div style="font-size:12px;font-weight:600;">${d.encargadoGenerador||'—'}</div>
+          </td>
+        </tr></table>
+      </td></tr>
+    </table>
+  </div>
+  <button class="btn-print" onclick="window.print()">Imprimir / Guardar PDF</button>
+  </body></html>`;
+ 
+  const win = window.open('', '_blank');
+  win.document.write(html);
+  win.document.close();
+}
+ 
 function showMsg(id){const el=document.getElementById(id);el.style.display='block';setTimeout(()=>el.style.display='none',2500);}
  
 // SELECTS RETIRO
