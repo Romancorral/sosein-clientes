@@ -609,7 +609,8 @@ function renderTablaRetiros() {
   tbody.innerHTML=sorted.map(r=>{
     const c=clientes.find(x=>String(x.id)===String(r.clienteId));
     const items=Array.isArray(r.items)?r.items:[];
-    return`<tr><td style="font-weight:500;">${c?c.nombre:"—"}</td><td style="font-size:12px;">${r.fecha}</td><td class="retiro-items">${items.map(i=>`${i.tipo} (${i.cantidad} ${i.unidad})`).join(" · ")}</td><td><span class="badge badge-gray">${r.destino}</span></td><td style="font-size:12px;color:#666;">${r.notas||"—"}</td><td style="white-space:nowrap;"><button class="btn-sm" onclick="generarActa('${r.id}')" style="margin-right:4px;background:#1a4a6b;color:#fff;border-color:#1a4a6b;">Acta</button><button class="btn-sm" onclick="abrirModalRetiro('${r.id}')" style="margin-right:4px;">Editar</button><button class="btn-danger-sm" onclick="eliminarRetiro('${r.id}')">Eliminar</button></td></tr>`;
+    const verBtn = r.actaUrl ? `<a href="${r.actaUrl}" target="_blank" class="btn-sm" style="margin-right:4px;background:#1a6e3c;color:#fff;border-color:#1a6e3c;text-decoration:none;">Ver acta</a>` : '';
+    return`<tr><td style="font-weight:500;">${c?c.nombre:"—"}</td><td style="font-size:12px;">${r.fecha}</td><td class="retiro-items">${items.map(i=>`${i.tipo} (${i.cantidad} ${i.unidad})`).join(" · ")}</td><td><span class="badge badge-gray">${r.destino}</span></td><td style="font-size:12px;color:#666;">${r.notas||"—"}</td><td style="white-space:nowrap;">${verBtn}<button class="btn-sm" onclick="generarActa('${r.id}')" style="margin-right:4px;background:#1a4a6b;color:#fff;border-color:#1a4a6b;">Acta</button><button class="btn-sm" onclick="abrirModalRetiro('${r.id}')" style="margin-right:4px;">Editar</button><button class="btn-danger-sm" onclick="eliminarRetiro('${r.id}')">Eliminar</button></td></tr>`;
   }).join("");
 }
  
