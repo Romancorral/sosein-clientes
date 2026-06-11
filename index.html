@@ -282,6 +282,15 @@ tr:hover td{background:#fafaf8;}
       </div>
     </div>
     <div class="card"><table><thead><tr><th style="width:70%;">Nombre</th><th style="width:30%;">Acción</th></tr></thead><tbody id="choferes-tbody"><tr><td colspan="2" class="loading">Cargando...</td></tr></tbody></table></div>
+    <div class="section-title" style="margin-top:1.5rem;">Relatores (Charla 5 min)</div>
+    <div id="msg-relator" class="success-msg">Relator agregado.</div>
+    <div class="form-card">
+      <div class="form-grid">
+        <div class="field"><label>Nombre del relator</label><input id="relator-nombre" type="text" placeholder="Ej: Daniel Suarez"></div>
+        <div style="display:flex;align-items:flex-end;"><button class="btn-green" id="btn-agregar-relator" onclick="agregarRelator()">Agregar relator</button></div>
+      </div>
+    </div>
+    <div class="card"><table><thead><tr><th style="width:70%;">Nombre</th><th style="width:30%;">Acción</th></tr></thead><tbody id="relatores-tbody"><tr><td colspan="2" class="loading">Cargando...</td></tr></tbody></table></div>
   </div>
  
   <!-- COTIZADOR -->
@@ -388,7 +397,27 @@ tr:hover td{background:#fafaf8;}
       <button class="btn-modal-cancel" onclick="cerrarModalCliente()">Cancelar</button>
       <button class="btn-modal-ok" onclick="guardarEdicionCliente()">Guardar</button>
     </div>
+    <!-- CHARLA 5 MIN -->
+  <div id="tab-charla" class="section">
+    <div class="section-title">Registro de Charla Operacional de 5 Minutos</div>
+    <div id="msg-charla" class="success-msg">✓ Charla registrada y PDF generado en Google Drive.</div>
+    <div id="err-charla" class="error-msg">Completa todos los campos.</div>
+    <div class="form-card">
+      <div class="form-grid three">
+        <div class="field"><label>Fecha</label><input id="cha-fecha" type="date"></div>
+        <div class="field"><label>Relator / Supervisor</label><select id="cha-relator"><option value="">Seleccionar</option></select></div>
+        <div class="field"><label>Persona que recibe la charla</label><select id="cha-receptor"><option value="">Seleccionar</option></select></div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:0.5rem;">
+        <button class="btn-green" id="btn-guardar-charla" onclick="guardarCharla()">Guardar y generar PDF</button>
+        <button class="btn-sm" onclick="limpiarCharla()">Limpiar</button>
+      </div>
+    </div>
+    <div class="section-title">Charlas registradas</div>
+    <div class="card"><table><thead><tr><th style="width:15%;">Fecha</th><th style="width:25%;">Relator</th><th style="width:30%;">Receptor</th><th style="width:30%;">Acción</th></tr></thead><tbody id="charlas-tbody"><tr><td colspan="4" class="loading">Cargando...</td></tr></tbody></table></div>
   </div>
+ 
+</div>
 </div>
  
 <!-- MODAL ODÓMETRO -->
@@ -457,8 +486,8 @@ const hoy = new Date().toISOString().split('T')[0];
  
 let currentUser = null;
 let currentRole = null;
-let clientes=[], retiros=[], camiones=[], responsables=[], choferes=[];
-let nextId=1, nextRetiroId=1, nextCamionId=1, nextRespId=1, nextChkId=1, nextChoferId=1, nextFolio=1;
+let clientes=[], retiros=[], camiones=[], responsables=[], choferes=[], relatores=[], charlas=[];
+let nextId=1, nextRetiroId=1, nextCamionId=1, nextRespId=1, nextChkId=1, nextChoferId=1, nextFolio=1, nextRelatorId=1, nextCharlaId=1;
 let itemsActuales=[], camionSeleccionado=null;
 let chkEstados={};
  
@@ -473,21 +502,26 @@ async function apiPost(data) {
  
 async function cargarDatos() {
   try {
-    const [c, r, cam, resp, chof] = await Promise.all([apiGet('getClientes'), apiGet('getRetiros'), apiGet('getCamiones'), apiGet('getResponsables'), apiGet('getChoferes')]);
+    const [c, r, cam, resp, chof, rel, cha] = await Promise.all([apiGet('getClientes'), apiGet('getRetiros'), apiGet('getCamiones'), apiGet('getResponsables'), apiGet('getChoferes'), apiGet('getRelatores'), apiGet('getCharlas')]);
     clientes = c.filter(x=>x.id);
     retiros = r.filter(x=>x.id);
     camiones = Array.isArray(cam) ? cam.filter(x=>x.id) : [];
     responsables = Array.isArray(resp) ? resp.filter(x=>x.id) : [];
     choferes = Array.isArray(chof) ? chof.filter(x=>x.id) : [];
+    relatores = Array.isArray(rel) ? rel.filter(x=>x.id) : [];
+    charlas = Array.isArray(cha) ? cha.filter(x=>x.id) : [];
     if(clientes.length) nextId = Math.max(...clientes.map(x=>parseInt(x.id)||0))+1;
     if(retiros.length) nextRetiroId = Math.max(...retiros.map(x=>parseInt(x.id)||0))+1;
     if(camiones.length) nextCamionId = Math.max(...camiones.map(x=>parseInt(x.id)||0))+1;
     if(responsables.length) nextRespId = Math.max(...responsables.map(x=>parseInt(x.id)||0))+1;
     if(choferes.length) nextChoferId = Math.max(...choferes.map(x=>parseInt(x.id)||0))+1;
+    if(relatores.length) nextRelatorId = Math.max(...relatores.map(x=>parseInt(x.id)||0))+1;
+    if(charlas.length) nextCharlaId = Math.max(...charlas.map(x=>parseInt(x.id)||0))+1;
     if(retiros.length) nextFolio = Math.max(...retiros.map(x=>parseInt(x.folio)||0))+1;
-    renderPanel(); renderFlota(); renderResponsables(); renderChoferes();
+    renderPanel(); renderFlota(); renderResponsables(); renderChoferes(); renderRelatores(); renderCharlas();
     actualizarSelectsChecklist();
     actualizarSelectsRetiro();
+    actualizarSelectsCharla();
     actualizarCotCamTabs();
     calcularCot();
   } catch(e) {
@@ -536,7 +570,11 @@ function logout() {
   document.getElementById('login-screen').style.display='flex';
   document.getElementById('app').style.display='none';
   document.getElementById('admin-pass').value='';
-  cargarResponsablesLogin();
+  document.addEventListener('DOMContentLoaded', ()=>{
+  const f=document.getElementById('cha-fecha');
+  if(f) f.value=hoy;
+});
+cargarResponsablesLogin();
 }
  
 function diasDesdeUltimoRetiro(cId) {
@@ -560,6 +598,7 @@ function showTab(tab,btn) {
   if(tab==="retiros") renderRetiros();
   if(tab==="flota") renderFlota();
   if(tab==="checklist") { actualizarSelectsChecklist(); renderChecklist(); }
+  if(tab==="charla") { actualizarSelectsCharla(); renderCharlas(); }
 }
  
 function renderPanel() {
@@ -1264,6 +1303,85 @@ function abrirActaVentana(d) {
   setTimeout(()=>URL.revokeObjectURL(url), 10000);
 }
  
+// RELATORES
+function renderRelatores(){
+  const tbody=document.getElementById('relatores-tbody');
+  if(!tbody)return;
+  if(!relatores.length){tbody.innerHTML=`<tr><td colspan="2" class="empty">Sin relatores registrados</td></tr>`;return;}
+  tbody.innerHTML=relatores.map(r=>`<tr><td style="font-weight:500;">${r.nombre}</td><td><button class="btn-danger-sm" onclick="eliminarRelator('${r.id}')">Eliminar</button></td></tr>`).join('');
+}
+ 
+async function agregarRelator(){
+  const nombre=document.getElementById("relator-nombre").value.trim();
+  if(!nombre){alert("Ingresa el nombre del relator.");return;}
+  const btn=document.getElementById("btn-agregar-relator");
+  btn.disabled=true;
+  try{
+    const rel={id:nextRelatorId++,nombre};
+    await apiPost({action:'saveRelator',...rel});
+    relatores.push(rel);
+    document.getElementById("relator-nombre").value="";
+    showMsg("msg-relator");renderRelatores();actualizarSelectsCharla();
+  }catch(e){alert("Error al guardar.");}
+  btn.disabled=false;
+}
+ 
+async function eliminarRelator(id){
+  if(!confirm("¿Eliminar este relator?"))return;
+  try{await apiPost({action:'deleteRelator',id});relatores=relatores.filter(r=>String(r.id)!==String(id));renderRelatores();}
+  catch(e){alert("Error al eliminar.");}
+}
+ 
+// CHARLA 5 MIN
+function actualizarSelectsCharla(){
+  const selRel=document.getElementById('cha-relator');
+  const selRec=document.getElementById('cha-receptor');
+  if(!selRel||!selRec)return;
+  selRel.innerHTML=`<option value="">Seleccionar relator</option>`+relatores.map(r=>`<option value="${r.nombre}">${r.nombre}</option>`).join('');
+  selRec.innerHTML=`<option value="">Seleccionar responsable</option>`+responsables.map(r=>`<option value="${r.nombre}">${r.nombre}</option>`).join('');
+}
+ 
+function renderCharlas(){
+  const tbody=document.getElementById('charlas-tbody');
+  if(!tbody)return;
+  const sorted=[...charlas].sort((a,b)=>new Date(b.fecha)-new Date(a.fecha));
+  if(!sorted.length){tbody.innerHTML=`<tr><td colspan="4" class="empty">Sin charlas registradas</td></tr>`;return;}
+  tbody.innerHTML=sorted.map(c=>`<tr>
+    <td style="font-size:12px;">${c.fecha}</td>
+    <td style="font-weight:500;">${c.relator}</td>
+    <td style="font-size:12px;">${c.receptor}</td>
+    <td>${c.charlaUrl?`<a href="${c.charlaUrl}" target="_blank" class="btn-sm" style="background:#1a6e3c;color:#fff;border-color:#1a6e3c;text-decoration:none;margin-right:4px;">Ver PDF</a>`:''}</td>
+  </tr>`).join('');
+}
+ 
+function limpiarCharla(){
+  document.getElementById('cha-fecha').value=hoy;
+  document.getElementById('cha-relator').value='';
+  document.getElementById('cha-receptor').value='';
+}
+ 
+async function guardarCharla(){
+  const fecha=document.getElementById('cha-fecha').value;
+  const relator=document.getElementById('cha-relator').value;
+  const receptor=document.getElementById('cha-receptor').value;
+  if(!fecha||!relator||!receptor){
+    document.getElementById('err-charla').style.display='block';
+    setTimeout(()=>document.getElementById('err-charla').style.display='none',3000);
+    return;
+  }
+  const btn=document.getElementById('btn-guardar-charla');
+  btn.disabled=true;btn.innerHTML='<span class="spinner"></span>Guardando...';
+  try{
+    const res=await apiPost({action:'saveCharla',id:nextCharlaId++,fecha,relator,receptor});
+    const charla={id:nextCharlaId-1,fecha,relator,receptor,charlaUrl:res.url||''};
+    charlas.push(charla);
+    showMsg('msg-charla');
+    limpiarCharla();
+    renderCharlas();
+  }catch(e){console.log('Error:',e);}
+  btn.disabled=false;btn.innerHTML='Guardar y generar PDF';
+}
+ 
 function showMsg(id){const el=document.getElementById(id);el.style.display='block';setTimeout(()=>el.style.display='none',2500);}
  
 // SELECTS RETIRO
@@ -1336,6 +1454,10 @@ async function generarActa(id){
   btn.disabled=false;btn.textContent='Acta';
 }
  
+document.addEventListener('DOMContentLoaded', ()=>{
+  const f=document.getElementById('cha-fecha');
+  if(f) f.value=hoy;
+});
 cargarResponsablesLogin();
 </script>
 </body>
