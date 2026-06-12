@@ -190,6 +190,7 @@ tr:hover td{background:#fafaf8;}
     </div>
     <div class="filters">
       <select id="f-zona" onchange="renderPanel()"><option value="">Todas las zonas</option><option>Copiapó</option><option>La Serena</option><option>Coquimbo</option><option>Ovalle</option></select>
+        <select id="f-encargado" onchange="renderPanel()"><option value="">Todos los encargados</option><option>Roman Corral</option><option>Andrea Trujillo</option></select>
       <select id="f-tipo" onchange="renderPanel()"><option value="">Todos los tipos</option><option>Sólidos</option><option>Aceites</option><option>Mixto</option></select>
       <select id="f-estado" onchange="renderPanel()"><option value="">Todos los estados</option><option value="urgente">Urgente</option><option value="por contactar">Por contactar</option><option value="al día">Al día</option></select>
     </div>
@@ -210,7 +211,7 @@ tr:hover td{background:#fafaf8;}
       <div class="form-grid"><div class="field"><label>Nombre empresa</label><input id="c-nombre" type="text" placeholder="Ej: Minera del Valle"></div><div class="field"><label>RUT</label><input id="c-rut" type="text" placeholder="76.917.791-4"></div></div>
       <div class="form-grid three"><div class="field"><label>Zona</label><select id="c-zona"><option value="">Seleccionar</option><option>Copiapó</option><option>La Serena</option><option>Coquimbo</option><option>Ovalle</option></select></div><div class="field"><label>Tipo de residuo</label><select id="c-tipo"><option value="">Seleccionar</option><option>Sólidos</option><option>Aceites</option><option>Mixto</option></select></div><div class="field"><label>Unidad habitual</label><select id="c-unidad"><option value="">Seleccionar</option><option>Toneladas</option><option>Tambores</option><option>Pallets</option><option>Litros</option></select></div></div>
       <div class="form-grid three"><div class="field"><label>Contacto</label><input id="c-contacto" type="text" placeholder="Nombre contacto"></div><div class="field"><label>Email</label><input id="c-email" type="email" placeholder="email@empresa.cl"></div><div class="field"><label>Teléfono</label><input id="c-telefono" type="text" placeholder="+56 9 ..."></div></div>
-      <div class="form-grid"><div class="field"><label>Dirección del retiro</label><input id="c-direccion" type="text" placeholder="Ej: Ruta 5 Norte km 456"></div></div>
+      <div class="form-grid three"><div class="field" style="grid-column:span 2;"><label>Dirección del retiro</label><input id="c-direccion" type="text" placeholder="Ej: Ruta 5 Norte km 456"></div><div class="field"><label>Encargado</label><select id="c-encargado"><option value="">Sin asignar</option><option>Roman Corral</option><option>Andrea Trujillo</option></select></div></div>
       <button class="btn-primary" id="btn-agregar-cliente" onclick="agregarCliente()">Agregar cliente</button>
     </div>
     <div class="section-title">Clientes registrados</div>
@@ -411,7 +412,10 @@ tr:hover td{background:#fafaf8;}
       <div class="field"><label>Email</label><input id="modal-c-email" type="email" style="width:100%;font-size:13px;padding:8px 11px;border-radius:8px;border:1px solid #e0e0da;background:#fff;color:#1a1a1a;font-family:'DM Sans',sans-serif;"></div>
       <div class="field"><label>Teléfono</label><input id="modal-c-telefono" type="text" style="width:100%;font-size:13px;padding:8px 11px;border-radius:8px;border:1px solid #e0e0da;background:#fff;color:#1a1a1a;font-family:'DM Sans',sans-serif;"></div>
     </div>
-    <div class="field" style="margin-bottom:10px;"><label>Dirección</label><input id="modal-c-direccion" type="text" style="width:100%;font-size:13px;padding:8px 11px;border-radius:8px;border:1px solid #e0e0da;background:#fff;color:#1a1a1a;font-family:'DM Sans',sans-serif;"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+      <div class="field"><label>Dirección</label><input id="modal-c-direccion" type="text" style="width:100%;font-size:13px;padding:8px 11px;border-radius:8px;border:1px solid #e0e0da;background:#fff;color:#1a1a1a;font-family:'DM Sans',sans-serif;"></div>
+      <div class="field"><label>Encargado</label><select id="modal-c-encargado" style="width:100%;font-size:13px;padding:8px 11px;border-radius:8px;border:1px solid #e0e0da;background:#fff;color:#1a1a1a;font-family:'DM Sans',sans-serif;"><option value="">Sin asignar</option><option>Roman Corral</option><option>Andrea Trujillo</option></select></div>
+    </div>
     <input type="hidden" id="modal-c-id">
     <div class="modal-btns">
       <button class="btn-modal-cancel" onclick="cerrarModalCliente()">Cancelar</button>
@@ -606,8 +610,10 @@ function renderPanel() {
   const tipo=document.getElementById("f-tipo").value;
   const estado=document.getElementById("f-estado").value;
   let filtered=clientes.filter(c=>{
+    const encFiltro=document.getElementById("f-encargado")?document.getElementById("f-encargado").value:"";
     if(zona&&c.zona!==zona)return false;
     if(tipo&&c.tipo!==tipo)return false;
+    if(encFiltro&&c.encargado!==encFiltro)return false;
     const d=diasDesdeUltimoRetiro(c.id);
     if(estado&&estadoDias(d)!==estado)return false;
     return true;
@@ -625,7 +631,7 @@ function renderClientes() {
   actualizarSelectClientes();
   const tbody=document.getElementById("clientes-tbody");
   if(!clientes.length){tbody.innerHTML=`<tr><td colspan="5" class="empty">Sin clientes</td></tr>`;return;}
-  tbody.innerHTML=clientes.map(c=>`<tr><td><div style="font-weight:500;">${c.nombre}</div><div style="font-size:11px;color:#888;">${c.rut||''}</div></td><td style="font-size:12px;">${c.zona}</td><td>${tipoBadge(c.tipo)}</td><td><div style="font-size:12px;">${c.contacto||'—'}</div><div style="font-size:11px;color:#888;">${c.email||''}</div></td><td><button class="btn-sm" onclick="irARetiro(${c.id})" style="margin-right:4px;">+ Retiro</button><button class="btn-sm" onclick="abrirModalCliente(${c.id})" style="margin-right:4px;">Editar</button><button class="btn-danger-sm" onclick="eliminarCliente(${c.id})">Eliminar</button></td></tr>`).join("");
+  tbody.innerHTML=clientes.map(c=>`<tr><td><div style="font-weight:500;">${c.nombre}</div><div style="font-size:11px;color:#888;">${c.rut||''}</div></td><td style="font-size:12px;">${c.zona}</td><td>${tipoBadge(c.tipo)}</td><td><div style="font-size:12px;">${c.contacto||'—'}</div><div style="font-size:11px;color:#888;">${c.email||''}</div></td><td style="font-size:11px;color:#666;">${c.encargado||'—'}</td><td><button class="btn-sm" onclick="irARetiro(${c.id})" style="margin-right:4px;">+ Retiro</button><button class="btn-sm" onclick="abrirModalCliente(${c.id})" style="margin-right:4px;">Editar</button><button class="btn-danger-sm" onclick="eliminarCliente(${c.id})">Eliminar</button></td></tr>`).join("");
 }
 
 function renderRetiros() {
@@ -702,15 +708,16 @@ async function agregarCliente() {
   const email=document.getElementById("c-email").value.trim();
   const telefono=document.getElementById("c-telefono").value.trim();
   const direccion=document.getElementById("c-direccion").value.trim();
+  const encargado=document.getElementById("c-encargado").value;
   if(!nombre||!zona||!tipo){alert("Completa nombre, zona y tipo.");return;}
   const btn=document.getElementById("btn-agregar-cliente");
   btn.disabled=true;btn.innerHTML='<span class="spinner"></span>Guardando...';
   try{
-    const cliente={id:nextId++,nombre,rut,zona,tipo,unidad,contacto,email,telefono,direccion};
+    const cliente={id:nextId++,nombre,rut,zona,tipo,unidad,contacto,email,telefono,direccion,encargado};
     await apiPost({action:'saveCliente',...cliente});
     clientes.push(cliente);
     ["c-nombre","c-rut","c-contacto","c-email","c-telefono","c-direccion"].forEach(id=>document.getElementById(id).value="");
-    ["c-zona","c-tipo","c-unidad"].forEach(id=>document.getElementById(id).value="");
+    ["c-zona","c-tipo","c-unidad","c-encargado"].forEach(id=>document.getElementById(id).value="");
     showMsg("msg-cliente");renderClientes();renderPanel();
   }catch(e){showMsg("err-cliente");}
   btn.disabled=false;btn.innerHTML='Agregar cliente';
@@ -1159,6 +1166,7 @@ function abrirModalCliente(id) {
   document.getElementById('modal-c-email').value=c.email||'';
   document.getElementById('modal-c-telefono').value=c.telefono||'';
   document.getElementById('modal-c-direccion').value=c.direccion||'';
+  document.getElementById('modal-c-encargado').value=c.encargado||'';
   document.getElementById('modal-cliente').classList.add('open');
 }
 
@@ -1177,6 +1185,7 @@ async function guardarEdicionCliente(){
   c.email=document.getElementById('modal-c-email').value.trim();
   c.telefono=document.getElementById('modal-c-telefono').value.trim();
   c.direccion=document.getElementById('modal-c-direccion').value.trim();
+  c.encargado=document.getElementById('modal-c-encargado').value;
   try{
     await apiPost({action:'deleteCliente',id});
     await apiPost({action:'saveCliente',...c});
