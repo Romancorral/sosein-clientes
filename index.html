@@ -215,7 +215,8 @@ tr:hover td{background:#fafaf8;}
       <button class="btn-primary" id="btn-agregar-cliente" onclick="agregarCliente()">Agregar cliente</button>
     </div>
     <div class="section-title">Clientes registrados</div>
-    <div class="card"><table><thead><tr><th style="width:27%;">Nombre</th><th style="width:13%;">Zona</th><th style="width:12%;">Tipo</th><th style="width:24%;">Contacto</th><th style="width:24%;">Acciones</th></tr></thead><tbody id="clientes-tbody"><tr><td colspan="5" class="loading">Cargando...</td></tr></tbody></table></div>
+    <div style="margin-bottom:10px;"><input id="f-buscar-cliente" type="text" placeholder="Buscar cliente..." oninput="renderClientes()" style="width:100%;max-width:320px;font-size:13px;padding:8px 12px;border-radius:8px;border:1px solid #e0e0da;background:#fff;color:#1a1a1a;font-family:'DM Sans',sans-serif;"></div>
+    <div class="card"><table><thead><tr><th style="width:22%;">Nombre</th><th style="width:10%;">Zona</th><th style="width:9%;">Tipo</th><th style="width:18%;">Contacto</th><th style="width:11%;">Encargado</th><th style="width:30%;">Acciones</th></tr></thead><tbody id="clientes-tbody"><tr><td colspan="6" class="loading">Cargando...</td></tr></tbody></table></div>
   </div>
 
   <!-- RETIROS -->
@@ -381,6 +382,17 @@ tr:hover td{background:#fafaf8;}
     <div class="section-title">Charlas registradas</div>
     <div class="card"><table><thead><tr><th style="width:15%;">Fecha</th><th style="width:25%;">Relator</th><th style="width:30%;">Receptor</th><th style="width:30%;">Acción</th></tr></thead><tbody id="charlas-tbody"><tr><td colspan="4" class="loading">Cargando...</td></tr></tbody></table></div>
   </div>
+
+<!-- MODAL VER CLIENTE -->
+<div class="modal-overlay" id="modal-ver-cliente">
+  <div class="modal" style="width:560px;max-height:85vh;overflow-y:auto;">
+    <div class="modal-title">Ficha del cliente</div>
+    <div id="ver-cliente-body"></div>
+    <div class="modal-btns" style="margin-top:1rem;">
+      <button class="btn-modal-cancel" onclick="document.getElementById('modal-ver-cliente').classList.remove('open')">Cerrar</button>
+    </div>
+  </div>
+</div>
 
 <!-- MODAL EDITAR CLIENTE -->
 <div class="modal-overlay" id="modal-cliente">
@@ -631,7 +643,10 @@ function renderClientes() {
   actualizarSelectClientes();
   const tbody=document.getElementById("clientes-tbody");
   if(!clientes.length){tbody.innerHTML=`<tr><td colspan="5" class="empty">Sin clientes</td></tr>`;return;}
-  tbody.innerHTML=clientes.map(c=>`<tr><td><div style="font-weight:500;">${c.nombre}</div><div style="font-size:11px;color:#888;">${c.rut||''}</div></td><td style="font-size:12px;">${c.zona}</td><td>${tipoBadge(c.tipo)}</td><td><div style="font-size:12px;">${c.contacto||'—'}</div><div style="font-size:11px;color:#888;">${c.email||''}</div></td><td style="font-size:11px;color:#666;">${c.encargado||'—'}</td><td><button class="btn-sm" onclick="irARetiro(${c.id})" style="margin-right:4px;">+ Retiro</button><button class="btn-sm" onclick="abrirModalCliente(${c.id})" style="margin-right:4px;">Editar</button><button class="btn-danger-sm" onclick="eliminarCliente(${c.id})">Eliminar</button></td></tr>`).join("");
+  const buscar=(document.getElementById('f-buscar-cliente')?document.getElementById('f-buscar-cliente').value:'').toLowerCase();
+  const filtrados=clientes.filter(c=>!buscar||c.nombre.toLowerCase().includes(buscar)||(c.rut&&c.rut.toLowerCase().includes(buscar)));
+  if(!filtrados.length){tbody.innerHTML=`<tr><td colspan="6" class="empty">Sin resultados</td></tr>`;return;}
+  tbody.innerHTML=filtrados.map(c=>`<tr><td><div style="font-weight:500;">${c.nombre}</div><div style="font-size:11px;color:#888;">${c.rut||''}</div></td><td style="font-size:12px;">${c.zona}</td><td>${tipoBadge(c.tipo)}</td><td><div style="font-size:12px;">${c.contacto||'—'}</div><div style="font-size:11px;color:#888;">${c.email||''}</div></td><td style="font-size:11px;color:#666;">${c.encargado||'—'}</td><td style="white-space:nowrap;"><button class="btn-sm" onclick="verCliente(${c.id})" style="margin-right:4px;background:#1a4a6b;color:#fff;border-color:#1a4a6b;">Ver</button><button class="btn-sm" onclick="irARetiro(${c.id})" style="margin-right:4px;">+ Retiro</button><button class="btn-sm" onclick="abrirModalCliente(${c.id})" style="margin-right:4px;">Editar</button><button class="btn-danger-sm" onclick="eliminarCliente(${c.id})">Eliminar</button></td></tr>`).join("");
 }
 
 function renderRetiros() {
@@ -1390,6 +1405,50 @@ async function guardarCharla(){
     renderCharlas();
   }catch(e){console.log('Error:',e);}
   btn.disabled=false;btn.innerHTML='Guardar y generar PDF';
+}
+
+// VER CLIENTE
+function verCliente(id) {
+  const c = clientes.find(x=>String(x.id)===String(id));
+  if(!c) return;
+  const retirosCli = retiros.filter(r=>String(r.clienteId)===String(id));
+  const infoRow = (label, val) => `
+    <div style="display:flex;padding:5px 0;border-bottom:1px solid #f0f0ec;">
+      <div style="width:140px;font-size:10px;color:#9ca3af;text-transform:uppercase;letter-spacing:0.3px;padding-top:2px;flex-shrink:0;">${label}</div>
+      <div style="font-size:12px;font-weight:500;color:#1a1a1a;">${val||'—'}</div>
+    </div>`;
+  const html = `
+    <div style="background:#1a4a6b;margin:-1.2rem -1.5rem 1rem -1.5rem;padding:16px 20px;border-radius:10px 10px 0 0;">
+      <div style="font-size:16px;font-weight:700;color:#fff;">${c.nombre}</div>
+      <div style="font-size:11px;color:#bfdbfe;margin-top:2px;">${c.rut||''} &nbsp;|&nbsp; ${c.zona} &nbsp;|&nbsp; ${c.tipo}</div>
+    </div>
+    <div style="margin-bottom:14px;">
+      ${infoRow('Contacto', c.contacto)}
+      ${infoRow('Email', c.email)}
+      ${infoRow('Teléfono', c.telefono)}
+      ${infoRow('Dirección', c.direccion)}
+      ${infoRow('Unidad', c.unidad)}
+      ${infoRow('Encargado', c.encargado)}
+    </div>
+    <div style="font-size:11px;font-weight:600;color:#1a4a6b;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:8px;">Historial de retiros (${retirosCli.length})</div>
+    ${retirosCli.length ? `
+    <table style="width:100%;border-collapse:collapse;font-size:11px;">
+      <thead><tr style="background:#f8fafc;">
+        <th style="padding:6px 8px;text-align:left;border-bottom:1px solid #e5e7eb;color:#9ca3af;font-weight:500;">Fecha</th>
+        <th style="padding:6px 8px;text-align:left;border-bottom:1px solid #e5e7eb;color:#9ca3af;font-weight:500;">Residuos</th>
+        <th style="padding:6px 8px;text-align:left;border-bottom:1px solid #e5e7eb;color:#9ca3af;font-weight:500;">Destino</th>
+      </tr></thead>
+      <tbody>
+        ${retirosCli.map(r=>`<tr style="border-bottom:1px solid #f0f0ec;">
+          <td style="padding:6px 8px;">${r.fecha}</td>
+          <td style="padding:6px 8px;">${Array.isArray(r.items)?r.items.map(i=>i.tipo+' ('+i.cantidad+' '+i.unidad+')').join(', '):'—'}</td>
+          <td style="padding:6px 8px;">${r.destino}</td>
+        </tr>`).join('')}
+      </tbody>
+    </table>` : '<div style="font-size:12px;color:#9ca3af;padding:8px 0;">Sin retiros registrados</div>'}
+  `;
+  document.getElementById('ver-cliente-body').innerHTML = html;
+  document.getElementById('modal-ver-cliente').classList.add('open');
 }
 
 function showMsg(id){const el=document.getElementById(id);el.style.display='block';setTimeout(()=>el.style.display='none',2500);}
