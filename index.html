@@ -361,6 +361,26 @@ tr:hover td{background:#fafaf8;}
 </div>
 </div>
  
+<!-- CHARLA 5 MIN -->
+  <div id="tab-charla" class="section">
+    <div class="section-title">Registro de Charla Operacional de 5 Minutos</div>
+    <div id="msg-charla" class="success-msg">✓ Charla registrada y PDF generado en Google Drive.</div>
+    <div id="err-charla" class="error-msg">Completa todos los campos.</div>
+    <div class="form-card">
+      <div class="form-grid three">
+        <div class="field"><label>Fecha</label><input id="cha-fecha" type="date"></div>
+        <div class="field"><label>Relator / Supervisor</label><select id="cha-relator"><option value="">Seleccionar</option></select></div>
+        <div class="field"><label>Persona que recibe la charla</label><select id="cha-receptor"><option value="">Seleccionar</option></select></div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:0.5rem;">
+        <button class="btn-green" id="btn-guardar-charla" onclick="guardarCharla()">Guardar y generar PDF</button>
+        <button class="btn-sm" onclick="limpiarCharla()">Limpiar</button>
+      </div>
+    </div>
+    <div class="section-title">Charlas registradas</div>
+    <div class="card"><table><thead><tr><th style="width:15%;">Fecha</th><th style="width:25%;">Relator</th><th style="width:30%;">Receptor</th><th style="width:30%;">Acción</th></tr></thead><tbody id="charlas-tbody"><tr><td colspan="4" class="loading">Cargando...</td></tr></tbody></table></div>
+  </div>
+ 
 <!-- MODAL EDITAR CLIENTE -->
 <div class="modal-overlay" id="modal-cliente">
   <div class="modal" style="width:500px;">
@@ -397,26 +417,6 @@ tr:hover td{background:#fafaf8;}
       <button class="btn-modal-cancel" onclick="cerrarModalCliente()">Cancelar</button>
       <button class="btn-modal-ok" onclick="guardarEdicionCliente()">Guardar</button>
     </div>
-    <!-- CHARLA 5 MIN -->
-  <div id="tab-charla" class="section">
-    <div class="section-title">Registro de Charla Operacional de 5 Minutos</div>
-    <div id="msg-charla" class="success-msg">✓ Charla registrada y PDF generado en Google Drive.</div>
-    <div id="err-charla" class="error-msg">Completa todos los campos.</div>
-    <div class="form-card">
-      <div class="form-grid three">
-        <div class="field"><label>Fecha</label><input id="cha-fecha" type="date"></div>
-        <div class="field"><label>Relator / Supervisor</label><select id="cha-relator"><option value="">Seleccionar</option></select></div>
-        <div class="field"><label>Persona que recibe la charla</label><select id="cha-receptor"><option value="">Seleccionar</option></select></div>
-      </div>
-      <div style="display:flex;gap:10px;margin-top:0.5rem;">
-        <button class="btn-green" id="btn-guardar-charla" onclick="guardarCharla()">Guardar y generar PDF</button>
-        <button class="btn-sm" onclick="limpiarCharla()">Limpiar</button>
-      </div>
-    </div>
-    <div class="section-title">Charlas registradas</div>
-    <div class="card"><table><thead><tr><th style="width:15%;">Fecha</th><th style="width:25%;">Relator</th><th style="width:30%;">Receptor</th><th style="width:30%;">Acción</th></tr></thead><tbody id="charlas-tbody"><tr><td colspan="4" class="loading">Cargando...</td></tr></tbody></table></div>
-  </div>
- 
 </div>
 </div>
  
@@ -555,7 +555,7 @@ function iniciarApp() {
   document.getElementById('user-label').textContent=currentUser;
   const nav=document.getElementById('nav-bar');
   if(currentRole==='admin') {
-    nav.innerHTML=`<button class="nav-btn" onclick="showTab('panel',this)">Panel</button><button class="nav-btn" onclick="showTab('clientes',this)">Clientes</button><button class="nav-btn" onclick="showTab('retiros',this)">Retiros</button><div class="nav-divider"></div><button class="nav-btn special" onclick="showTab('flota',this)">🚛 Flota</button><div class="nav-divider"></div><button class="nav-btn special" onclick="showTab('cotizador',this)">🧮 Cotizador</button><div class="nav-divider"></div><button class="nav-btn special" onclick="showTab('checklist',this)">✅ Checklist</button>`;
+    nav.innerHTML=`<button class="nav-btn" onclick="showTab('panel',this)">Panel</button><button class="nav-btn" onclick="showTab('clientes',this)">Clientes</button><button class="nav-btn" onclick="showTab('retiros',this)">Retiros</button><div class="nav-divider"></div><button class="nav-btn special" onclick="showTab('flota',this)">🚛 Flota</button><div class="nav-divider"></div><button class="nav-btn special" onclick="showTab('cotizador',this)">🧮 Cotizador</button><div class="nav-divider"></div><button class="nav-btn special" onclick="showTab('checklist',this)">✅ Checklist</button><div class="nav-divider"></div><button class="nav-btn special" onclick="showTab('charla',this)">📋 Charla 5min</button>`;
     cargarDatos();
     setTimeout(()=>showTab('panel',nav.querySelector('.nav-btn')),100);
   } else {
