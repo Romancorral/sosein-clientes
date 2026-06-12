@@ -559,7 +559,7 @@ function iniciarApp() {
     cargarDatos();
     setTimeout(()=>showTab('panel',nav.querySelector('.nav-btn')),100);
   } else {
-    nav.innerHTML=`<button class="nav-btn special active" onclick="showTab('checklist',this)">✅ Checklist</button>`;
+    nav.innerHTML=`<button class="nav-btn special active" onclick="showTab('checklist',this)">✅ Checklist</button><div class="nav-divider"></div><button class="nav-btn special" onclick="showTab('charla',this)">📋 Charla 5min</button>`;
     cargarDatos();
     setTimeout(()=>showTab('checklist',nav.querySelector('.nav-btn')),100);
   }
@@ -598,7 +598,14 @@ function showTab(tab,btn) {
   if(tab==="retiros") renderRetiros();
   if(tab==="flota") renderFlota();
   if(tab==="checklist") { actualizarSelectsChecklist(); renderChecklist(); }
-  if(tab==="charla") { actualizarSelectsCharla(); renderCharlas(); }
+  if(tab==="charla") { 
+    actualizarSelectsCharla(); 
+    renderCharlas();
+    if(currentRole==='conductor' && currentUser) {
+      const sel = document.getElementById('cha-receptor');
+      if(sel) sel.value = currentUser;
+    }
+  }
 }
  
 function renderPanel() {
