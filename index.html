@@ -2,6 +2,11 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#1a4a6b">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="SOSEIN">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SOSEIN — Gestión</title>
 <style>
@@ -233,7 +238,7 @@ tr:hover td{background:#fafaf8;}
         <div class="item-row header"><span>Tipo de residuo</span><span>Cantidad</span><span>Unidad</span><span></span></div>
         <div id="items-body"><div class="items-empty">Agrega al menos un residuo</div></div>
         <div class="item-add">
-          <select id="new-tipo"><option value="">Tipo de residuo...</option><option>Filtros de aceite</option><option>Filtros de aire</option><option>EPP contaminado</option><option>Trapos y guaipes</option><option>Sólidos con HC</option><option>Chatarra electrónica</option><option>Tambores vacíos</option><option>Tierra impregnada</option><option>Mangueras hidráulicas</option><option>Aceites usados</option><option>Lubricantes usados</option><option>Baterías</option><option>Lodos</option><option>Otro</option></select>
+          <datalist id="tipos-residuo"><option>Filtros de aceite</option><option>Filtros de aire</option><option>EPP contaminado</option><option>Trapos y guaipes</option><option>Sólidos con HC</option><option>Chatarra electrónica</option><option>Tambores vacíos 208 litros</option><option>Tambores vacíos 60 litros</option><option>Tambores vacíos 20 litros</option><option>Tierra impregnada</option><option>Mangueras hidráulicas</option><option>Aceites usados</option><option>Lubricantes usados</option><option>Baterías</option><option>Lodos</option></datalist><input id="new-tipo" list="tipos-residuo" placeholder="Tipo de residuo..." autocomplete="off" style="font-size:12px;padding:5px 8px;border-radius:7px;border:1px solid #e0e0da;background:#fff;color:#1a1a1a;font-family:'DM Sans',sans-serif;width:100%;">
           <input id="new-cantidad" type="number" placeholder="0" min="0" step="0.1">
           <select id="new-unidad"><option>Tambores</option><option>Toneladas</option><option>Pallets</option><option>Litros</option><option>Unidades</option></select>
           <button class="btn-add-item" onclick="agregarItem()">+</button>
@@ -477,9 +482,7 @@ tr:hover td{background:#fafaf8;}
       </div>
       <div id="modal-items-body"></div>
       <div style="display:grid;grid-template-columns:1fr 70px 90px 30px;gap:6px;padding:8px 10px;background:#fafaf8;border-top:1px solid #e8e8e4;">
-        <select id="modal-new-tipo" style="font-size:12px;padding:5px 8px;border-radius:7px;border:1px solid #e0e0da;background:#fff;color:#1a1a1a;font-family:'DM Sans',sans-serif;">
-          <option value="">Tipo...</option><option>Filtros de aceite</option><option>Filtros de aire</option><option>EPP contaminado</option><option>Trapos y guaipes</option><option>Sólidos con HC</option><option>Chatarra electrónica</option><option>Tambores vacíos</option><option>Tierra impregnada</option><option>Mangueras hidráulicas</option><option>Aceites usados</option><option>Lubricantes usados</option><option>Baterías</option><option>Lodos</option><option>Otro</option>
-        </select>
+        <input id="modal-new-tipo" list="tipos-residuo" placeholder="Tipo de residuo..." autocomplete="off" style="font-size:12px;padding:5px 8px;border-radius:7px;border:1px solid #e0e0da;background:#fff;color:#1a1a1a;font-family:'DM Sans',sans-serif;width:100%;">
         <input id="modal-new-cantidad" type="number" placeholder="0" min="0" step="0.1" style="font-size:12px;padding:5px 8px;border-radius:7px;border:1px solid #e0e0da;background:#fff;color:#1a1a1a;font-family:'DM Sans',sans-serif;">
         <select id="modal-new-unidad" style="font-size:12px;padding:5px 8px;border-radius:7px;border:1px solid #e0e0da;background:#fff;color:#1a1a1a;font-family:'DM Sans',sans-serif;">
           <option>Tambores</option><option>Toneladas</option><option>Pallets</option><option>Litros</option><option>Unidades</option>
@@ -793,7 +796,7 @@ function renderModalItems() {
 function modalEliminarItem(i){modalItems.splice(i,1);renderModalItems();}
 
 function modalAgregarItem(){
-  const tipo=document.getElementById('modal-new-tipo').value;
+  const tipo=document.getElementById('modal-new-tipo').value.trim();
   const cantidad=parseFloat(document.getElementById('modal-new-cantidad').value);
   const unidad=document.getElementById('modal-new-unidad').value;
   if(!tipo||!cantidad||cantidad<=0){alert("Selecciona tipo y cantidad.");return;}
@@ -1218,7 +1221,12 @@ function abrirActaVentana(d) {
   const liquidos = items.filter(i => i.tipo === 'Aceites usados' || i.tipo === 'Lubricantes usados');
   const fechaStr = d.fecha ? d.fecha.split('T')[0] : '—';
 
-  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Acta Retiro ${folio}</title>
+  const html = `<!DOCTYPE html><html><head><meta charset="UTF-8">
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#1a4a6b">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="SOSEIN"><title>Acta Retiro ${folio}</title>
   <style>
     body{font-family:Arial,sans-serif;margin:0;color:#1a1a1a;font-size:12px;}
     td{-webkit-print-color-adjust:exact;print-color-adjust:exact;}
