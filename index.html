@@ -1522,6 +1522,7 @@ async function generarActa(id){
   try{
     const actaData = {
       action:'saveActa',
+      retiroId:id,
       folio:r.folio||id,
       fecha:r.fecha,
       clienteNombre:c?c.nombre:'—',
