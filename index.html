@@ -467,12 +467,17 @@ tr:hover td{background:#fafaf8;}
       <div class="field"><label>Cliente</label><select id="modal-r-cliente" style="font-size:13px;padding:8px 11px;border-radius:8px;border:1px solid #e0e0da;background:#fff;color:#1a1a1a;font-family:'DM Sans',sans-serif;width:100%;"></select></div>
       <div class="field"><label>Fecha</label><input id="modal-r-fecha" type="date" style="font-size:13px;padding:8px 11px;border-radius:8px;border:1px solid #e0e0da;background:#fff;color:#1a1a1a;font-family:'DM Sans',sans-serif;width:100%;"></div>
     </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px;">
       <div class="field"><label>Destino</label>
         <select id="modal-r-destino" style="font-size:13px;padding:8px 11px;border-radius:8px;border:1px solid #e0e0da;background:#fff;color:#1a1a1a;font-family:'DM Sans',sans-serif;width:100%;">
           <option>Recycling</option><option>Confinor</option><option>Crowan</option><option>Otro</option>
         </select>
       </div>
+      <div class="field"><label>Camión</label><select id="modal-r-camion" style="font-size:13px;padding:8px 11px;border-radius:8px;border:1px solid #e0e0da;background:#fff;color:#1a1a1a;font-family:'DM Sans',sans-serif;width:100%;"></select></div>
+      <div class="field"><label>Chofer encargado</label><select id="modal-r-chofer" style="font-size:13px;padding:8px 11px;border-radius:8px;border:1px solid #e0e0da;background:#fff;color:#1a1a1a;font-family:'DM Sans',sans-serif;width:100%;"></select></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+      <div class="field"><label>Encargado generador</label><input id="modal-r-encargado" type="text" style="font-size:13px;padding:8px 11px;border-radius:8px;border:1px solid #e0e0da;background:#fff;color:#1a1a1a;font-family:'DM Sans',sans-serif;width:100%;"></div>
       <div class="field"><label>Notas</label><input id="modal-r-notas" type="text" style="font-size:13px;padding:8px 11px;border-radius:8px;border:1px solid #e0e0da;background:#fff;color:#1a1a1a;font-family:'DM Sans',sans-serif;width:100%;"></div>
     </div>
     <div style="font-size:12px;font-weight:500;color:#666;margin-bottom:8px;">Residuos</div>
@@ -815,6 +820,11 @@ function abrirModalRetiro(id) {
   document.getElementById('modal-r-notas').value=r.notas||'';
   const sel=document.getElementById('modal-r-cliente');
   sel.innerHTML=clientes.map(c=>`<option value="${c.id}"${String(c.id)===String(r.clienteId)?' selected':''}>${c.nombre}</option>`).join('');
+  const selCam=document.getElementById('modal-r-camion');
+  selCam.innerHTML=`<option value="">Sin camión</option>`+camiones.map(c=>`<option value="${c.patente}"${c.patente===r.camion?' selected':''}>${c.patente} — ${c.marca} ${c.modelo}</option>`).join('');
+  const selChof=document.getElementById('modal-r-chofer');
+  selChof.innerHTML=`<option value="">Sin chofer</option>`+choferes.map(c=>`<option value="${c.nombre}"${c.nombre===r.chofer?' selected':''}>${c.nombre}</option>`).join('');
+  document.getElementById('modal-r-encargado').value=r.encargadoGenerador||'';
   modalItems = Array.isArray(r.items) ? r.items.map(i=>({...i})) : [];
   renderModalItems();
   document.getElementById('modal-retiro').classList.add('open');
@@ -828,10 +838,13 @@ async function guardarEdicionRetiro(){
   const fecha=document.getElementById('modal-r-fecha').value;
   const destino=document.getElementById('modal-r-destino').value;
   const notas=document.getElementById('modal-r-notas').value.trim();
+  const camion=document.getElementById('modal-r-camion').value;
+  const chofer=document.getElementById('modal-r-chofer').value;
+  const encargadoGenerador=document.getElementById('modal-r-encargado').value.trim();
   if(!modalItems.length){alert("Agrega al menos un residuo.");return;}
   const r=retiros.find(x=>String(x.id)===String(id));
   if(!r)return;
-  r.clienteId=clienteId; r.fecha=fecha; r.destino=destino; r.notas=notas; r.items=[...modalItems];
+  r.clienteId=clienteId; r.fecha=fecha; r.destino=destino; r.notas=notas; r.items=[...modalItems]; r.camion=camion; r.chofer=chofer; r.encargadoGenerador=encargadoGenerador;
   try{
     await apiPost({action:'deleteRetiro',id});
     await apiPost({action:'saveRetiro',...r});
