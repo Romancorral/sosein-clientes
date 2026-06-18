@@ -214,7 +214,7 @@ tr:hover td{background:#fafaf8;}
     <div id="err-cliente" class="error-msg">Error al guardar.</div>
     <div class="form-card">
       <div class="form-grid"><div class="field"><label>Nombre empresa</label><input id="c-nombre" type="text" placeholder="Ej: Minera del Valle"></div><div class="field"><label>RUT</label><input id="c-rut" type="text" placeholder="76.917.791-4"></div></div>
-      <div class="form-grid three"><div class="field"><label>Zona</label><select id="c-zona"><option value="">Seleccionar</option><option>Copiapó</option><option>La Serena</option><option>Coquimbo</option><option>Ovalle</option><option>Vallenar</option></select></div><div class="field"><label>Tipo de residuo</label><select id="c-tipo"><option value="">Seleccionar</option><option>Sólidos</option><option>Aceites</option><option>Mixto</option></select></div><div class="field"><label>Unidad habitual</label><select id="c-unidad"><option value="">Seleccionar</option><option>Toneladas</option><option>Tambores</option><option>Pallets</option><option>Litros</option></select></div></div>
+      <div class="form-grid three"><div class="field"><label>Zona</label><datalist id="lista-zonas"><option>Copiapó</option><option>La Serena</option><option>Coquimbo</option><option>Ovalle</option><option>Vallenar</option></datalist><input id="c-zona" list="lista-zonas" placeholder="Zona o ciudad..." autocomplete="off" style="font-size:13px;padding:8px 11px;border-radius:8px;border:1px solid #e0e0da;background:#fff;color:#1a1a1a;font-family:'DM Sans',sans-serif;"></div><div class="field"><label>Tipo de residuo</label><select id="c-tipo"><option value="">Seleccionar</option><option>Sólidos</option><option>Aceites</option><option>Mixto</option></select></div><div class="field"><label>Unidad habitual</label><select id="c-unidad"><option value="">Seleccionar</option><option>Toneladas</option><option>Tambores</option><option>Pallets</option><option>Litros</option></select></div></div>
       <div class="form-grid three"><div class="field"><label>Contacto</label><input id="c-contacto" type="text" placeholder="Nombre contacto"></div><div class="field"><label>Email</label><input id="c-email" type="email" placeholder="email@empresa.cl"></div><div class="field"><label>Teléfono</label><input id="c-telefono" type="text" placeholder="+56 9 ..."></div></div>
       <div class="form-grid three"><div class="field" style="grid-column:span 2;"><label>Dirección del retiro</label><input id="c-direccion" type="text" placeholder="Ej: Ruta 5 Norte km 456"></div><div class="field"><label>Encargado</label><select id="c-encargado"><option value="">Sin asignar</option><option>Roman Corral</option><option>Andrea Trujillo</option></select></div></div>
       <button class="btn-primary" id="btn-agregar-cliente" onclick="agregarCliente()">Agregar cliente</button>
@@ -409,9 +409,7 @@ tr:hover td{background:#fafaf8;}
     </div>
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:10px;">
       <div class="field"><label>Zona</label>
-        <select id="modal-c-zona" style="width:100%;font-size:13px;padding:8px 11px;border-radius:8px;border:1px solid #e0e0da;background:#fff;color:#1a1a1a;font-family:'DM Sans',sans-serif;">
-          <option>Copiapó</option><option>La Serena</option><option>Coquimbo</option><option>Ovalle</option><option>Vallenar</option>
-        </select>
+        <input id="modal-c-zona" list="lista-zonas" placeholder="Zona o ciudad..." autocomplete="off" style="width:100%;font-size:13px;padding:8px 11px;border-radius:8px;border:1px solid #e0e0da;background:#fff;color:#1a1a1a;font-family:'DM Sans',sans-serif;">
       </div>
       <div class="field"><label>Tipo</label>
         <select id="modal-c-tipo" style="width:100%;font-size:13px;padding:8px 11px;border-radius:8px;border:1px solid #e0e0da;background:#fff;color:#1a1a1a;font-family:'DM Sans',sans-serif;">
