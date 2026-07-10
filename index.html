@@ -633,6 +633,7 @@ function renderPanel() {
     if(tipo&&c.tipo!==tipo)return false;
     if(encFiltro&&c.encargado!==encFiltro)return false;
     const d=diasDesdeUltimoRetiro(c.id);
+    if(d===999)return false;
     if(estado&&estadoDias(d)!==estado)return false;
     return true;
   }).map(c=>({...c,dias:diasDesdeUltimoRetiro(c.id)})).sort((a,b)=>b.dias-a.dias);
