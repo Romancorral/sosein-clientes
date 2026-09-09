@@ -238,7 +238,7 @@ tr:hover td{background:#fafaf8;}
         <div class="item-row header"><span>Tipo de residuo</span><span>Cantidad</span><span>Unidad</span><span></span></div>
         <div id="items-body"><div class="items-empty">Agrega al menos un residuo</div></div>
         <div class="item-add">
-          <datalist id="tipos-residuo"><option>Filtros de aceite</option><option>Filtros de aire</option><option>EPP contaminado</option><option>Trapos y guaipes</option><option>Sólidos con HC</option><option>Chatarra electrónica</option><option>Tambores vacíos 208 litros</option><option>Tambores vacíos 60 litros</option><option>Tambores vacíos 20 litros</option><option>Tierra impregnada</option><option>Mangueras hidráulicas</option><option>Aceites usados</option><option>Lubricantes usados</option><option>Baterías</option><option>Lodos</option></datalist><input id="new-tipo" list="tipos-residuo" placeholder="Tipo de residuo..." autocomplete="off" style="font-size:12px;padding:5px 8px;border-radius:7px;border:1px solid #e0e0da;background:#fff;color:#1a1a1a;font-family:'DM Sans',sans-serif;width:100%;">
+          <datalist id="tipos-residuo"><option>Filtros de aceites</option><option>EPP contaminado</option><option>Aerosoles vacíos no perforados</option><option>Suelo contaminado</option><option>Sólidos contaminados con HC</option><option>Flexibles de aceite</option><option>Batería ácido y plomo</option><option>Envases contaminados</option><option>Tierra contaminada hidrocarburos</option><option>Guaipes/estopas/trapos con grasas o lubricantes</option><option>Aguas contaminadas HC</option><option>Aceites lubricantes usados</option><option>Envases vacíos plásticos contaminados</option><option>Aceites y grasas</option><option>Tambores vacíos 208 litros</option><option>Tambores vacíos 60 litros</option><option>Tambores vacíos 20 litros</option></datalist><input id="new-tipo" list="tipos-residuo" placeholder="Tipo de residuo..." autocomplete="off" style="font-size:12px;padding:5px 8px;border-radius:7px;border:1px solid #e0e0da;background:#fff;color:#1a1a1a;font-family:'DM Sans',sans-serif;width:100%;">
           <input id="new-cantidad" type="number" placeholder="0" min="0" step="0.1">
           <select id="new-unidad"><option>Tambores</option><option>Toneladas</option><option>Pallets</option><option>Litros</option><option>Unidades</option></select>
           <button class="btn-add-item" onclick="agregarItem()">+</button>
@@ -398,7 +398,23 @@ tr:hover td{background:#fafaf8;}
     </div>
   </div>
 </div>
-
+<!-- MODAL CERTIFICADO -->
+<div class="modal-overlay" id="modal-certificado">
+  <div class="modal" style="width:620px;max-height:85vh;overflow-y:auto;">
+    <div class="modal-title">Generar Certificado</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+      <div class="field"><label>N° Guía de Despacho</label><input id="cert-guia" type="text" placeholder="Ej: 12345" style="width:100%;font-size:13px;padding:8px 11px;border-radius:8px;border:1px solid #e0e0da;background:#fff;font-family:'DM Sans',sans-serif;"></div>
+      <div class="field"><label>N° Sidrep</label><input id="cert-sidrep" type="text" placeholder="Ej: 21063240" style="width:100%;font-size:13px;padding:8px 11px;border-radius:8px;border:1px solid #e0e0da;background:#fff;font-family:'DM Sans',sans-serif;"></div>
+    </div>
+    <div style="font-size:12px;font-weight:600;color:#1a4a6b;margin-bottom:8px;text-transform:uppercase;letter-spacing:0.4px;">Residuos y tratamiento</div>
+    <div id="cert-residuos-body" style="border:1px solid #e5e7eb;border-radius:8px;overflow:hidden;margin-bottom:14px;"></div>
+    <input type="hidden" id="cert-retiro-id">
+    <div class="modal-btns">
+      <button class="btn-modal-cancel" onclick="cerrarModalCertificado()">Cancelar</button>
+      <button class="btn-modal-ok" id="btn-generar-cert" onclick="generarCertificado()" style="background:#1a6e3c;border-color:#1a6e3c;">Generar PDF</button>
+    </div>
+  </div>
+</div>
 <!-- MODAL EDITAR CLIENTE -->
 <div class="modal-overlay" id="modal-cliente">
   <div class="modal" style="width:500px;">
@@ -677,7 +693,8 @@ function renderTablaRetiros() {
     const c=clientes.find(x=>String(x.id)===String(r.clienteId));
     const items=Array.isArray(r.items)?r.items:[];
     const verBtn = r.actaUrl ? `<a href="${r.actaUrl}" target="_blank" class="btn-sm" style="margin-right:4px;background:#1a6e3c;color:#fff;border-color:#1a6e3c;text-decoration:none;">Ver acta</a>` : '';
-    return`<tr><td style="font-weight:500;">${c?c.nombre:"—"}</td><td style="font-size:12px;">${r.fecha}</td><td class="retiro-items">${items.map(i=>`${i.tipo} (${i.cantidad} ${i.unidad})`).join(" · ")}</td><td><span class="badge badge-gray">${r.destino}</span></td><td style="font-size:12px;color:#666;">${r.notas||"—"}</td><td style="white-space:nowrap;">${verBtn}<button class="btn-sm" onclick="generarActa('${r.id}')" style="margin-right:4px;background:#1a4a6b;color:#fff;border-color:#1a4a6b;">Acta</button><button class="btn-sm" onclick="abrirModalRetiro('${r.id}')" style="margin-right:4px;">Editar</button><button class="btn-danger-sm" onclick="eliminarRetiro('${r.id}')">🗑️</button></td></tr>`;
+    const certBtn = r.certUrl ? `<a href="${r.certUrl}" target="_blank" class="btn-sm" style="margin-right:4px;background:#166534;color:#fff;border-color:#166534;text-decoration:none;">Ver cert.</a>` : '';
+    return`<tr><td style="font-weight:500;">${c?c.nombre:"—"}</td><td style="font-size:12px;">${r.fecha}</td><td class="retiro-items">${items.map(i=>`${i.tipo} (${i.cantidad} ${i.unidad})`).join(" · ")}</td><td><span class="badge badge-gray">${r.destino}</span></td><td style="font-size:12px;color:#666;">${r.notas||"—"}</td><td style="white-space:nowrap;">${verBtn}${certBtn}<button class="btn-sm" onclick="generarActa('${r.id}')" style="margin-right:4px;background:#1a4a6b;color:#fff;border-color:#1a4a6b;">Acta</button><button class="btn-sm" onclick="abrirModalCertificado('${r.id}')" style="margin-right:4px;background:#1a6e3c;color:#fff;border-color:#1a6e3c;">Cert.</button><button class="btn-sm" onclick="abrirModalRetiro('${r.id}')" style="margin-right:4px;">Editar</button><button class="btn-danger-sm" onclick="eliminarRetiro('${r.id}')">🗑️</button></td></tr>`;
   }).join("");
 }
 
@@ -1470,7 +1487,103 @@ function verCliente(id) {
   document.getElementById('ver-cliente-body').innerHTML = html;
   document.getElementById('modal-ver-cliente').classList.add('open');
 }
+// CERTIFICADO
+const RESIDUOS_MAP = {
+  'filtros de aceites':{tratamiento:'RECICLAJE / RELLENO DE SEGURIDAD',pct:'41% - 60%',color:'mid'},
+  'epp contaminado':{tratamiento:'COPROCESO',pct:'81% - 100%',color:'high'},
+  'aerosoles vacíos no perforados':{tratamiento:'COPROCESO',pct:'81% - 100%',color:'high'},
+  'suelo contaminado':{tratamiento:'RELLENO DE SEGURIDAD',pct:'0% - 20%',color:'low'},
+  'sólidos contaminados con hc':{tratamiento:'COPROCESO',pct:'81% - 100%',color:'high'},
+  'flexibles de aceite':{tratamiento:'COPROCESO',pct:'81% - 100%',color:'high'},
+  'batería ácido y plomo':{tratamiento:'RECICLAJE',pct:'81% - 100%',color:'high'},
+  'envases contaminados':{tratamiento:'RECICLAJE',pct:'81% - 100%',color:'high'},
+  'tierra contaminada hidrocarburos':{tratamiento:'RELLENO DE SEGURIDAD',pct:'0% - 20%',color:'low'},
+  'guaipes/estopas/trapos con grasas o lubricantes':{tratamiento:'COPROCESO',pct:'81% - 100%',color:'high'},
+  'aguas contaminadas hc':{tratamiento:'PTR / COPROCESO',pct:'81% - 100%',color:'high'},
+  'aceites lubricantes usados':{tratamiento:'PTR / COPROCESO',pct:'81% - 100%',color:'high'},
+  'envases vacíos plásticos contaminados':{tratamiento:'PTR / COPROCESO',pct:'81% - 100%',color:'high'},
+  'aceites y grasas':{tratamiento:'COPROCESO / REVALORIZACIÓN',pct:'81% - 100%',color:'high'},
+  'tambores vacíos 208 litros':{tratamiento:'RECICLAJE',pct:'81% - 100%',color:'high'},
+  'tambores vacíos 60 litros':{tratamiento:'RECICLAJE',pct:'81% - 100%',color:'high'},
+  'tambores vacíos 20 litros':{tratamiento:'RECICLAJE',pct:'81% - 100%',color:'high'},
+  'aceites usados':{tratamiento:'PTR / COPROCESO',pct:'81% - 100%',color:'high'},
+  'lubricantes usados':{tratamiento:'PTR / COPROCESO',pct:'81% - 100%',color:'high'},
+};
 
+function buscarResiduo(tipo) {
+  const key = tipo.toLowerCase().trim();
+  if(RESIDUOS_MAP[key]) return RESIDUOS_MAP[key];
+  for(const k of Object.keys(RESIDUOS_MAP)){
+    if(key.includes(k)||k.includes(key)) return RESIDUOS_MAP[k];
+  }
+  return null;
+}
+
+function abrirModalCertificado(id) {
+  const r = retiros.find(x=>String(x.id)===String(id));
+  if(!r) return;
+  document.getElementById('cert-retiro-id').value = id;
+  document.getElementById('cert-guia').value = '';
+  document.getElementById('cert-sidrep').value = '';
+  const items = Array.isArray(r.items) ? r.items : [];
+  const body = document.getElementById('cert-residuos-body');
+  body.innerHTML =
+    '<div style="display:grid;grid-template-columns:2fr 2fr 1fr;gap:0;background:#1a4a6b;padding:7px 10px;">' +
+    '<span style="font-size:9px;font-weight:700;color:#fff;text-transform:uppercase;">Residuo</span>' +
+    '<span style="font-size:9px;font-weight:700;color:#fff;text-transform:uppercase;">Tratamiento</span>' +
+    '<span style="font-size:9px;font-weight:700;color:#fff;text-transform:uppercase;">Revalorización</span></div>' +
+    items.map((item,i)=>{
+      const match = buscarResiduo(item.tipo);
+      const trat = match ? match.tratamiento : '';
+      const pct = match ? match.pct : '';
+      return `<div style="display:grid;grid-template-columns:2fr 2fr 1fr;gap:6px;align-items:center;padding:8px 10px;border-bottom:1px solid #f0f0ec;background:${i%2===0?'#fff':'#fafaf8'};">
+        <div style="font-size:11px;font-weight:500;">${item.tipo} <span style="color:#888;font-size:10px;">(${item.cantidad} ${item.unidad})</span></div>
+        <input data-idx="${i}" data-field="trat" value="${trat}" placeholder="Tipo de tratamiento" style="font-size:11px;padding:4px 7px;border-radius:6px;border:1px solid #e0e0da;background:#fff;font-family:'DM Sans',sans-serif;width:100%;">
+        <input data-idx="${i}" data-field="pct" value="${pct}" placeholder="%" style="font-size:11px;padding:4px 7px;border-radius:6px;border:1px solid #e0e0da;background:#fff;font-family:'DM Sans',sans-serif;width:100%;">
+      </div>`;
+    }).join('');
+  document.getElementById('modal-certificado').classList.add('open');
+}
+
+function cerrarModalCertificado(){document.getElementById('modal-certificado').classList.remove('open');}
+
+async function generarCertificado() {
+  const id = document.getElementById('cert-retiro-id').value;
+  const guia = document.getElementById('cert-guia').value.trim();
+  const sidrep = document.getElementById('cert-sidrep').value.trim();
+  const r = retiros.find(x=>String(x.id)===String(id));
+  if(!r) return;
+  const c = clientes.find(x=>String(x.id)===String(r.clienteId));
+  const items = Array.isArray(r.items) ? r.items : [];
+  const residuosData = items.map((item,i)=>{
+    const tratInput = document.querySelector(`#cert-residuos-body input[data-idx="${i}"][data-field="trat"]`);
+    const pctInput = document.querySelector(`#cert-residuos-body input[data-idx="${i}"][data-field="pct"]`);
+    return {tipo:item.tipo,cantidad:item.cantidad,unidad:item.unidad,tratamiento:tratInput?tratInput.value:'',pct:pctInput?pctInput.value:''};
+  });
+  const btn = document.getElementById('btn-generar-cert');
+  btn.disabled=true; btn.textContent='Generando...';
+  try {
+    const fechaStr = r.fecha ? r.fecha.split('T')[0] : r.fecha;
+    const res = await apiPost({
+      action:'saveCertificado',
+      retiroId:id,
+      fecha:fechaStr,
+      guiaDespacho:guia,
+      sidrep:sidrep,
+      clienteNombre:c?c.nombre:'—',
+      clienteRut:c?c.rut:'—',
+      clienteDireccion:c?c.direccion:'—',
+      destino:r.destino,
+      folio:r.folio||id,
+      items:residuosData,
+    });
+    if(res.url){r.certUrl=res.url;renderTablaRetiros();}
+    cerrarModalCertificado();
+    showMsg('msg-retiro');
+  } catch(e){alert('Error al generar certificado.');}
+  btn.disabled=false; btn.textContent='Generar PDF';
+}
+  
 function showMsg(id){const el=document.getElementById(id);el.style.display='block';setTimeout(()=>el.style.display='none',2500);}
 
 // SELECTS RETIRO
