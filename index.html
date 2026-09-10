@@ -1574,7 +1574,7 @@ async function generarCertificado() {
       clienteRut:c?c.rut:'—',
       clienteDireccion:c?c.direccion:'—',
       destino:r.destino,
-      folio:r.folio||id,
+      clienteId:r.clienteId||'',
       items:residuosData,
     });
     if(res.url){r.certUrl=res.url;renderTablaRetiros();}
