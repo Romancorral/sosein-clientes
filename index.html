@@ -540,7 +540,8 @@ async function apiPost(data) {
 
 async function cargarDatos() {
   try {
-    const [c, r, cam, resp, chof, rel, cha] = await Promise.all([apiGet('getClientes'), apiGet('getRetiros'), apiGet('getCamiones'), apiGet('getResponsables'), apiGet('getChoferes'), apiGet('getRelatores'), apiGet('getCharlas')]);
+    const d = await apiGet('getAllData');
+const [c, r, cam, resp, chof, rel, cha] = [d.clientes, d.retiros, d.camiones, d.responsables, d.choferes, d.relatores, d.charlas];
     clientes = c.filter(x=>x.id);
     retiros = r.filter(x=>x.id);
     camiones = Array.isArray(cam) ? cam.filter(x=>x.id) : [];
