@@ -247,7 +247,9 @@ tr:hover td{background:#fafaf8;}
     </div>
     <div class="section-title">Últimos retiros</div>
     <div class="filters" style="margin-bottom:0.5rem;">
-    </div>
+  <input id="f-retiro-cliente" list="f-retiro-list" placeholder="Todos los clientes" oninput="renderTablaRetiros()" style="padding:6px 10px;border-radius:7px;border:1px solid #e0e0da;background:#fff;font-family:'DM Sans',sans-serif;font-size:13px;width:260px;">
+  <datalist id="f-retiro-list"></datalist>
+</div>
     <div class="card"><table><thead><tr><th style="width:16%;">Cliente</th><th style="width:8%;">Fecha</th><th style="width:20%;">Residuos</th><th style="width:8%;">Destino</th><th style="width:8%;">Notas</th><th style="width:40%;">Acción</th></tr></thead><tbody id="retiros-tbody"><tr><td colspan="6" class="loading">Cargando...</td></tr></tbody></table></div>
   </div>
 
