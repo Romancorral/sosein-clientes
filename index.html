@@ -679,17 +679,19 @@ function renderRetiros() {
   itemsActuales=[]; renderItemsActuales();
   document.getElementById("r-fecha").value=hoy;
   // Actualizar filtro de clientes en retiros
-  const sel=document.getElementById("f-retiro-cliente");
-  const current=sel.value;
-  sel.innerHTML=`<option value="">Todos los clientes</option>`+clientes.map(c=>`<option value="${c.id}"${String(c.id)===String(current)?' selected':''}>${c.nombre}</option>`).join('');
+  const dl=document.getElementById("f-retiro-list");
+dl.innerHTML=clientes.map(c=>`<option value="${c.nombre}">`).join('');
   renderTablaRetiros();
 }
 
 function renderTablaRetiros() {
   const tbody=document.getElementById("retiros-tbody");
-  const filtroCliente=document.getElementById("f-retiro-cliente").value;
-  let sorted=[...retiros].sort((a,b)=>new Date(b.fecha)-new Date(a.fecha));
-  if(filtroCliente) sorted=sorted.filter(r=>String(r.clienteId)===String(filtroCliente));
+  const filtroCliente=document.getElementById("f-retiro-cliente").value.trim().toLowerCase();
+let sorted=[...retiros].sort((a,b)=>new Date(b.fecha)-new Date(a.fecha));
+if(filtroCliente) sorted=sorted.filter(r=>{
+  const c=clientes.find(x=>String(x.id)===String(r.clienteId));
+  return c && c.nombre.toLowerCase().includes(filtroCliente);
+});
   if(!sorted.length){tbody.innerHTML=`<tr><td colspan="6" class="empty">Sin retiros</td></tr>`;return;}
   tbody.innerHTML=sorted.map(r=>{
     const c=clientes.find(x=>String(x.id)===String(r.clienteId));
