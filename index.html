@@ -709,9 +709,8 @@ function renderItemsActuales() {
 }
 
 function actualizarSelectClientes() {
-  const sel=document.getElementById("r-cliente");
-  const current=sel.value;
-  sel.innerHTML=`<option value="">Seleccionar cliente</option>`+clientes.map(c=>`<option value="${c.id}"${String(c.id)===String(current)?" selected":""}>${c.nombre} (${c.zona})</option>`).join("");
+  const dl=document.getElementById("r-cliente-list");
+  if(dl) dl.innerHTML=clientes.map(c=>`<option value="${c.nombre} (${c.zona})" data-id="${c.id}">`).join('');
 }
 
 function actualizarDestino() {
