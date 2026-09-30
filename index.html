@@ -773,7 +773,9 @@ async function eliminarCliente(id){
 }
 
 async function guardarRetiro(){
-  const clienteId=document.getElementById("r-cliente").value;
+  const clienteNombre=document.getElementById("r-cliente").value;
+const clienteObj=clientes.find(c=>`${c.nombre} (${c.zona})`===clienteNombre);
+const clienteId=clienteObj?clienteObj.id:'';
   const fecha=document.getElementById("r-fecha").value;
   const destino=document.getElementById("r-destino").value;
   const notas=document.getElementById("r-notas").value.trim();
