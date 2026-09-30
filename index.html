@@ -715,8 +715,8 @@ function actualizarSelectClientes() {
 }
 
 function actualizarDestino() {
-  const cId=document.getElementById("r-cliente").value;
-  const c=clientes.find(x=>String(x.id)===String(cId));
+  const clienteNombre=document.getElementById("r-cliente").value;
+const c=clientes.find(x=>`${x.nombre} (${x.zona})`===clienteNombre);
   const sel=document.getElementById("r-destino");
   if(c&&c.tipo==="Aceites")sel.value="Crowan";
   else if(c&&c.zona==="Copiapó")sel.value="Confinor";
