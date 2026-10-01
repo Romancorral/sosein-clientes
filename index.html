@@ -789,7 +789,7 @@ const choferLiquidos=document.getElementById("r-chofer-liquidos").value;
   const btn=document.getElementById("btn-guardar-retiro");
   btn.disabled=true;btn.innerHTML='<span class="spinner"></span>Guardando...';
   try{
-    const retiro={id:nextRetiroId++,clienteId,fecha,items:[...itemsActuales],destino,notas,camion,chofer,encargadoGenerador,folio};
+    const retiro={id:nextRetiroId++,clienteId,fecha,items:[...itemsActuales],destino,notas,camionSolidos,choferSolidos,camionLiquidos,choferLiquidos,encargadoGenerador,folio};
     await apiPost({action:'saveRetiro',...retiro});
     retiros.push(retiro);itemsActuales=[];renderItemsActuales();
     document.getElementById("r-cliente").value="";document.getElementById("r-destino").value="";document.getElementById("r-notas").value="";
