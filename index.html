@@ -1661,11 +1661,12 @@ async function generarActa(id){
       clienteEmail:c?c.email:'—',
       items:r.items,
       camionSolidos:r.camionSolidos||'—',
-choferSolidos:r.choferSolidos||'—',
-camionLiquidos:r.camionLiquidos||'—',
-choferLiquidos:r.choferLiquidos||'—',
-      encargadoGenerador:r.encargadoGenerador||'—',
-      destino:r.destino
+      choferSolidos:r.choferSolidos||'—',
+      camionLiquidos:r.camionLiquidos||'—',
+      choferLiquidos:r.choferLiquidos||'—',
+      destinoSolidos:r.destinoSolidos||'—',
+      destinoLiquidos:r.destinoLiquidos||'—',
+      encargadoGenerador:r.encargadoGenerador||'—'
     };
     const res = await apiPost(actaData);
     if(res.url) r.actaUrl = res.url;
@@ -1674,12 +1675,3 @@ choferLiquidos:r.choferLiquidos||'—',
   }catch(e){alert("Error al generar acta.");}
   btn.disabled=false;btn.textContent='Acta';
 }
-
-document.addEventListener('DOMContentLoaded', ()=>{
-  const f=document.getElementById('cha-fecha');
-  if(f) f.value=hoy;
-});
-cargarResponsablesLogin();
-</script>
-</body>
-</html>
