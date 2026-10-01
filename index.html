@@ -1595,11 +1595,17 @@ function showMsg(id){const el=document.getElementById(id);el.style.display='bloc
 
 // SELECTS RETIRO
 function actualizarSelectsRetiro(){
-  const selCam=document.getElementById("r-camion");
-  const selChof=document.getElementById("r-chofer");
-  if(!selCam||!selChof)return;
-  selCam.innerHTML=`<option value="">Seleccionar camión</option>`+camiones.map(c=>`<option value="${c.patente}">${c.patente} — ${c.marca} ${c.modelo}</option>`).join('');
-  selChof.innerHTML=`<option value="">Seleccionar chofer</option>`+choferes.map(c=>`<option value="${c.nombre}">${c.nombre}</option>`).join('');
+  const selCamS=document.getElementById("r-camion-solidos");
+  const selChofS=document.getElementById("r-chofer-solidos");
+  const selCamL=document.getElementById("r-camion-liquidos");
+  const selChofL=document.getElementById("r-chofer-liquidos");
+  if(!selCamS||!selChofS||!selCamL||!selChofL)return;
+  const optCam=`<option value="">Seleccionar camión</option>`+camiones.map(c=>`<option value="${c.patente}">${c.patente} — ${c.marca} ${c.modelo}</option>`).join('');
+  const optChof=`<option value="">Seleccionar chofer</option>`+choferes.map(c=>`<option value="${c.nombre}">${c.nombre}</option>`).join('');
+  selCamS.innerHTML=optCam;
+  selChofS.innerHTML=optChof;
+  selCamL.innerHTML=optCam;
+  selChofL.innerHTML=optChof;
 }
 
 // CHOFERES
