@@ -785,7 +785,7 @@ async function guardarRetiro(){
   const choferLiquidos=document.getElementById("r-chofer-liquidos").value;
   const encargadoGenerador=document.getElementById("r-encargado").value.trim();
   const folio=nextFolio++;
-  if(!clienteId||!fecha||!destinoSolidos){alert("Selecciona cliente, fecha y destino sólidos.");return;}
+  if(!clienteId||!fecha||(!destinoSolidos&&!destinoLiquidos)){alert("Selecciona cliente, fecha y al menos un destino.");return;}
   if(!itemsActuales.length){alert("Agrega al menos un residuo.");return;}
   const btn=document.getElementById("btn-guardar-retiro");
   btn.disabled=true;btn.innerHTML='<span class="spinner"></span>Guardando...';
