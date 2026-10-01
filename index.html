@@ -773,26 +773,30 @@ async function eliminarCliente(id){
 
 async function guardarRetiro(){
   const clienteNombre=document.getElementById("r-cliente").value;
-const clienteObj=clientes.find(c=>`${c.nombre} (${c.zona})`===clienteNombre);
-const clienteId=clienteObj?clienteObj.id:'';
+  const clienteObj=clientes.find(c=>`${c.nombre} (${c.zona})`===clienteNombre);
+  const clienteId=clienteObj?clienteObj.id:'';
   const fecha=document.getElementById("r-fecha").value;
-  const destino=document.getElementById("r-destino").value;
+  const destinoSolidos=document.getElementById("r-destino-solidos").value;
+  const destinoLiquidos=document.getElementById("r-destino-liquidos").value;
   const notas=document.getElementById("r-notas").value.trim();
   const camionSolidos=document.getElementById("r-camion-solidos").value;
-const choferSolidos=document.getElementById("r-chofer-solidos").value;
-const camionLiquidos=document.getElementById("r-camion-liquidos").value;
-const choferLiquidos=document.getElementById("r-chofer-liquidos").value;
+  const choferSolidos=document.getElementById("r-chofer-solidos").value;
+  const camionLiquidos=document.getElementById("r-camion-liquidos").value;
+  const choferLiquidos=document.getElementById("r-chofer-liquidos").value;
   const encargadoGenerador=document.getElementById("r-encargado").value.trim();
   const folio=nextFolio++;
-  if(!clienteId||!fecha||!destino){alert("Selecciona cliente, fecha y destino.");return;}
+  if(!clienteId||!fecha||!destinoSolidos){alert("Selecciona cliente, fecha y destino sólidos.");return;}
   if(!itemsActuales.length){alert("Agrega al menos un residuo.");return;}
   const btn=document.getElementById("btn-guardar-retiro");
   btn.disabled=true;btn.innerHTML='<span class="spinner"></span>Guardando...';
   try{
-    const retiro={id:nextRetiroId++,clienteId,fecha,items:[...itemsActuales],destino,notas,camionSolidos,choferSolidos,camionLiquidos,choferLiquidos,encargadoGenerador,folio};
+    const retiro={id:nextRetiroId++,clienteId,fecha,items:[...itemsActuales],destinoSolidos,destinoLiquidos,notas,camionSolidos,choferSolidos,camionLiquidos,choferLiquidos,encargadoGenerador,folio};
     await apiPost({action:'saveRetiro',...retiro});
     retiros.push(retiro);itemsActuales=[];renderItemsActuales();
-    document.getElementById("r-cliente").value="";document.getElementById("r-destino").value="";document.getElementById("r-notas").value="";
+    document.getElementById("r-cliente").value="";
+    document.getElementById("r-destino-solidos").value="";
+    document.getElementById("r-destino-liquidos").value="";
+    document.getElementById("r-notas").value="";
     document.getElementById("r-camion-solidos").value="";document.getElementById("r-chofer-solidos").value="";document.getElementById("r-camion-liquidos").value="";document.getElementById("r-chofer-liquidos").value="";document.getElementById("r-encargado").value="";
     showMsg("msg-retiro");renderRetiros();renderPanel();
   }catch(e){showMsg("err-retiro");}
