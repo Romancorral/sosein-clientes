@@ -778,8 +778,10 @@ const clienteId=clienteObj?clienteObj.id:'';
   const fecha=document.getElementById("r-fecha").value;
   const destino=document.getElementById("r-destino").value;
   const notas=document.getElementById("r-notas").value.trim();
-  const camion=document.getElementById("r-camion").value;
-  const chofer=document.getElementById("r-chofer").value;
+  const camionSolidos=document.getElementById("r-camion-solidos").value;
+const choferSolidos=document.getElementById("r-chofer-solidos").value;
+const camionLiquidos=document.getElementById("r-camion-liquidos").value;
+const choferLiquidos=document.getElementById("r-chofer-liquidos").value;
   const encargadoGenerador=document.getElementById("r-encargado").value.trim();
   const folio=nextFolio++;
   if(!clienteId||!fecha||!destino){alert("Selecciona cliente, fecha y destino.");return;}
