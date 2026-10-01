@@ -793,7 +793,7 @@ const choferLiquidos=document.getElementById("r-chofer-liquidos").value;
     await apiPost({action:'saveRetiro',...retiro});
     retiros.push(retiro);itemsActuales=[];renderItemsActuales();
     document.getElementById("r-cliente").value="";document.getElementById("r-destino").value="";document.getElementById("r-notas").value="";
-    document.getElementById("r-camion").value="";document.getElementById("r-chofer").value="";document.getElementById("r-encargado").value="";
+    document.getElementById("r-camion-solidos").value="";document.getElementById("r-chofer-solidos").value="";document.getElementById("r-camion-liquidos").value="";document.getElementById("r-chofer-liquidos").value="";document.getElementById("r-encargado").value="";
     showMsg("msg-retiro");renderRetiros();renderPanel();
   }catch(e){showMsg("err-retiro");}
   btn.disabled=false;btn.innerHTML='Guardar retiro';
