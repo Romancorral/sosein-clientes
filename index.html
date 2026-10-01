@@ -1656,9 +1656,10 @@ async function generarActa(id){
       clienteTelefono:c?c.telefono:'—',
       clienteEmail:c?c.email:'—',
       items:r.items,
-      almacenamiento:r.items?r.items.map(i=>i.unidad).filter((v,i,a)=>a.indexOf(v)===i).join(', '):'—',
-      camion:r.camion||'—',
-      chofer:r.chofer||'—',
+      camionSolidos:r.camionSolidos||'—',
+choferSolidos:r.choferSolidos||'—',
+camionLiquidos:r.camionLiquidos||'—',
+choferLiquidos:r.choferLiquidos||'—',
       encargadoGenerador:r.encargadoGenerador||'—',
       destino:r.destino
     };
