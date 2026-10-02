@@ -715,15 +715,18 @@ function actualizarSelectClientes() {
 
 function actualizarDestino() {
   const clienteNombre=document.getElementById("r-cliente").value;
-const c=clientes.find(x=>`${x.nombre} (${x.zona})`===clienteNombre);
-  const sel=document.getElementById("r-destino");
-  if(c&&c.tipo==="Aceites")sel.value="Crowan";
-  else if(c&&c.zona==="Copiapó")sel.value="Confinor";
-  else if(c)sel.value="Recycling";
-  // Auto-fill encargado generador con contacto del cliente
+  const c=clientes.find(x=>`${x.nombre} (${x.zona})`===clienteNombre);
+  // Auto-fill destinos según tipo/zona
+  const selS=document.getElementById("r-destino-solidos");
+  const selL=document.getElementById("r-destino-liquidos");
+  if(c){
+    if(c.tipo==="Aceites"){selL.value="Crowan";}
+    else if(c.tipo==="Mixto"){selL.value="Crowan";selS.value=c.zona==="Copiapó"?"Confinor":"Recycling";}
+    else{selS.value=c.zona==="Copiapó"?"Confinor":"Recycling";}
+  }
+  // Auto-fill encargado generador
   const encargado=document.getElementById("r-encargado");
-  if(c&&c.contacto&&!encargado.value) encargado.value=c.contacto;
-  else if(c&&c.contacto) encargado.value=c.contacto;
+  if(c&&c.contacto) encargado.value=c.contacto;
 }
 
 function agregarItem() {
