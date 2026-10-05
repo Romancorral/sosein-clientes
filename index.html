@@ -1208,6 +1208,7 @@ async function guardarChecklist(){
     const obsInterior=document.getElementById('obs-interior').value;
     const obsMecanico=document.getElementById('obs-mecanico').value;
     const obsSeguridad=document.getElementById('obs-seguridad').value;
+    const obsEquipamiento=document.getElementById('obs-equipamiento').value;
     await apiPost({action:'saveChecklist',id:nextChkId++,fecha,responsable:resp,equipo,exterior,interior,mecanico,seguridad,obsExterior,obsInterior,obsMecanico,obsSeguridad});
     showMsg('msg-checklist');
     limpiarChecklist();
