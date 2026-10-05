@@ -1197,11 +1197,12 @@ async function guardarChecklist(){
   }
   const btn=document.getElementById('btn-guardar-chk');
   btn.disabled=true;btn.innerHTML='<span class="spinner"></span>Guardando...';
-  const exterior={};const interior={};const mecanico={};const seguridad={};
+   const exterior={};const interior={};const mecanico={};const seguridad={};const equipamiento={};
   chkSecciones[0].items.forEach(i=>exterior[i.num]=chkEstados[i.num]);
   chkSecciones[1].items.forEach(i=>interior[i.num]=chkEstados[i.num]);
   chkSecciones[2].items.forEach(i=>mecanico[i.num]=chkEstados[i.num]);
   chkSecciones[3].items.forEach(i=>seguridad[i.num]=chkEstados[i.num]);
+  chkSecciones[4].items.forEach(i=>equipamiento[i.num]=chkEstados[i.num]);
   try{
     const obsExterior=document.getElementById('obs-exterior').value;
     const obsInterior=document.getElementById('obs-interior').value;
