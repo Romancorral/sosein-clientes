@@ -599,7 +599,7 @@ if(unidades.length) nextUnidadId = Math.max(...unidades.map(x=>parseInt(x.id)||0
     if(relatores.length) nextRelatorId = Math.max(...relatores.map(x=>parseInt(x.id)||0))+1;
     if(charlas.length) nextCharlaId = Math.max(...charlas.map(x=>parseInt(x.id)||0))+1;
     if(retiros.length) nextFolio = Math.max(...retiros.map(x=>parseInt(x.folio)||0))+1;
-    renderPanel(); renderFlota(); renderResponsables(); renderChoferes(); renderRelatores(); renderCharlas();
+    renderPanel(); renderFlota(); renderResponsables(); renderChoferes(); renderRelatores(); renderCharlas(); renderDestinos(); renderResiduos(); renderUnidades(); actualizarTiposResiduo(); actualizarSelectUnidades();
     actualizarSelectsChecklist();
     actualizarSelectsRetiro();
     actualizarSelectsCharla();
