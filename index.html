@@ -775,7 +775,9 @@ function agregarItem() {
   const cantidad=parseFloat(document.getElementById("new-cantidad").value);
   const unidad=document.getElementById("new-unidad").value;
   if(!tipo||!cantidad||cantidad<=0){alert("Selecciona tipo y cantidad.");return;}
-  itemsActuales.push({tipo,cantidad,unidad});
+  const res=residuos.find(x=>x.nombre===tipo);
+const estado=res?res.estado:'Sólido';
+itemsActuales.push({tipo,cantidad,unidad,estado});
   document.getElementById("new-tipo").value="";
   document.getElementById("new-cantidad").value="";
   renderItemsActuales();
