@@ -1745,6 +1745,8 @@ function actualizarSelectsRetiro(){
   const selChofS=document.getElementById("r-chofer-solidos");
   const selCamL=document.getElementById("r-camion-liquidos");
   const selChofL=document.getElementById("r-chofer-liquidos");
+  const selDS=document.getElementById("r-destino-solidos");
+  const selDL=document.getElementById("r-destino-liquidos");
   if(!selCamS||!selChofS||!selCamL||!selChofL)return;
   const optCam=`<option value="">Seleccionar camión</option>`+camiones.map(c=>`<option value="${c.patente}">${c.patente} — ${c.marca} ${c.modelo}</option>`).join('');
   const optChof=`<option value="">Seleccionar chofer</option>`+choferes.map(c=>`<option value="${c.nombre}">${c.nombre}</option>`).join('');
@@ -1752,6 +1754,14 @@ function actualizarSelectsRetiro(){
   selChofS.innerHTML=optChof;
   selCamL.innerHTML=optCam;
   selChofL.innerHTML=optChof;
+  if(selDS&&destinos.length){
+    const destS=destinos.filter(d=>d.tipo==='Sólidos'||d.tipo==='Ambos');
+    selDS.innerHTML=`<option value="">Seleccionar</option>`+destS.map(d=>`<option>${d.nombre}</option>`).join('');
+  }
+  if(selDL&&destinos.length){
+    const destL=destinos.filter(d=>d.tipo==='Líquidos'||d.tipo==='Ambos');
+    selDL.innerHTML=`<option value="">Seleccionar</option>`+destL.map(d=>`<option>${d.nombre}</option>`).join('');
+  }
 }
 
 // CHOFERES
