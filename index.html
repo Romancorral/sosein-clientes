@@ -1445,6 +1445,101 @@ async function eliminarRelator(id){
   catch(e){alert("Error al eliminar.");}
 }
 
+  // ---- CONFIGURACIÓN: DESTINOS ----
+async function agregarDestino(){
+  const nombre=document.getElementById("dest-nombre").value.trim();
+  const tipo=document.getElementById("dest-tipo").value;
+  if(!nombre){alert("Ingresa el nombre del destino.");return;}
+  const btn=document.getElementById("btn-agregar-dest");
+  btn.disabled=true;
+  try{
+    const dest={id:nextDestinoId++,nombre,tipo};
+    await apiPost({action:'saveDestino',...dest});
+    destinos.push(dest);
+    document.getElementById("dest-nombre").value="";
+    showMsg("msg-destino");renderDestinos();actualizarSelectsRetiro();
+  }catch(e){alert("Error al guardar.");}
+  btn.disabled=false;
+}
+async function eliminarDestino(id){
+  if(!confirm("¿Eliminar este destino?"))return;
+  try{await apiPost({action:'deleteDestino',id});destinos=destinos.filter(r=>String(r.id)!==String(id));renderDestinos();actualizarSelectsRetiro();}
+  catch(e){alert("Error al eliminar.");}
+}
+function renderDestinos(){
+  const tb=document.getElementById("destinos-tbody");
+  if(!tb)return;
+  if(!destinos.length){tb.innerHTML='<tr><td colspan="3" class="empty">Sin destinos registrados</td></tr>';return;}
+  tb.innerHTML=destinos.map(d=>`<tr><td>${d.nombre}</td><td>${d.tipo||'—'}</td><td><button class="btn-danger-sm" onclick="eliminarDestino(${d.id})">Eliminar</button></td></tr>`).join('');
+}
+
+// ---- CONFIGURACIÓN: RESIDUOS ----
+async function agregarResiduo(){
+  const nombre=document.getElementById("res-nombre").value.trim();
+  const estado=document.getElementById("res-estado").value;
+  if(!nombre){alert("Ingresa el nombre del residuo.");return;}
+  const btn=document.getElementById("btn-agregar-res");
+  btn.disabled=true;
+  try{
+    const res={id:nextResiduoId++,nombre,estado};
+    await apiPost({action:'saveResiduo',...res});
+    residuos.push(res);
+    document.getElementById("res-nombre").value="";
+    showMsg("msg-residuo");renderResiduos();actualizarTiposResiduo();
+  }catch(e){alert("Error al guardar.");}
+  btn.disabled=false;
+}
+async function eliminarResiduo(id){
+  if(!confirm("¿Eliminar este residuo?"))return;
+  try{await apiPost({action:'deleteResiduo',id});residuos=residuos.filter(r=>String(r.id)!==String(id));renderResiduos();actualizarTiposResiduo();}
+  catch(e){alert("Error al eliminar.");}
+}
+function renderResiduos(){
+  const tb=document.getElementById("residuos-tbody");
+  if(!tb)return;
+  if(!residuos.length){tb.innerHTML='<tr><td colspan="3" class="empty">Sin residuos registrados</td></tr>';return;}
+  tb.innerHTML=residuos.map(r=>`<tr><td>${r.nombre}</td><td>${r.estado||'—'}</td><td><button class="btn-danger-sm" onclick="eliminarResiduo(${r.id})">Eliminar</button></td></tr>`).join('');
+}
+
+// ---- CONFIGURACIÓN: UNIDADES ----
+async function agregarUnidad(){
+  const nombre=document.getElementById("unid-nombre").value.trim();
+  if(!nombre){alert("Ingresa el nombre de la unidad.");return;}
+  const btn=document.getElementById("btn-agregar-unid");
+  btn.disabled=true;
+  try{
+    const unid={id:nextUnidadId++,nombre};
+    await apiPost({action:'saveUnidad',...unid});
+    unidades.push(unid);
+    document.getElementById("unid-nombre").value="";
+    showMsg("msg-unidad");renderUnidades();actualizarSelectUnidades();
+  }catch(e){alert("Error al guardar.");}
+  btn.disabled=false;
+}
+async function eliminarUnidad(id){
+  if(!confirm("¿Eliminar esta unidad?"))return;
+  try{await apiPost({action:'deleteUnidad',id});unidades=unidades.filter(r=>String(r.id)!==String(id));renderUnidades();actualizarSelectUnidades();}
+  catch(e){alert("Error al eliminar.");}
+}
+function renderUnidades(){
+  const tb=document.getElementById("unidades-tbody");
+  if(!tb)return;
+  if(!unidades.length){tb.innerHTML='<tr><td colspan="2" class="empty">Sin unidades registradas</td></tr>';return;}
+  tb.innerHTML=unidades.map(u=>`<tr><td>${u.nombre}</td><td><button class="btn-danger-sm" onclick="eliminarUnidad(${u.id})">Eliminar</button></td></tr>`).join('');
+}
+function actualizarTiposResiduo(){
+  const dl=document.getElementById("tipos-residuo");
+  if(!dl)return;
+  dl.innerHTML=residuos.map(r=>`<option>${r.nombre}</option>`).join('');
+}
+function actualizarSelectUnidades(){
+  const sel=document.getElementById("new-unidad");
+  if(!sel)return;
+  const val=sel.value;
+  sel.innerHTML=unidades.map(u=>`<option>${u.nombre}</option>`).join('');
+  if(val)sel.value=val;
+}
+  
 // CHARLA 5 MIN
 function actualizarSelectsCharla(){
   const selRel=document.getElementById('cha-relator');
