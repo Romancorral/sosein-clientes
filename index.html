@@ -577,7 +577,7 @@ async function apiPost(data) {
 async function cargarDatos() {
   try {
     const d = await apiGet('getAllData');
-const [c, r, cam, resp, chof, rel, cha] = [d.clientes, d.retiros, d.camiones, d.responsables, d.choferes, d.relatores, d.charlas];
+const [c, r, cam, resp, chof, rel, cha, dest, res, unid] = [d.clientes, d.retiros, d.camiones, d.responsables, d.choferes, d.relatores, d.charlas, d.destinos||[], d.residuos||[], d.unidades||[]];
     clientes = c.filter(x=>x.id);
     retiros = r.filter(x=>x.id);
     camiones = Array.isArray(cam) ? cam.filter(x=>x.id) : [];
@@ -585,6 +585,12 @@ const [c, r, cam, resp, chof, rel, cha] = [d.clientes, d.retiros, d.camiones, d.
     choferes = Array.isArray(chof) ? chof.filter(x=>x.id) : [];
     relatores = Array.isArray(rel) ? rel.filter(x=>x.id) : [];
     charlas = Array.isArray(cha) ? cha.filter(x=>x.id) : [];
+    destinos = Array.isArray(dest) ? dest.filter(x=>x.id) : [];
+residuos = Array.isArray(res) ? res.filter(x=>x.id) : [];
+unidades = Array.isArray(unid) ? unid.filter(x=>x.id) : [];
+if(destinos.length) nextDestinoId = Math.max(...destinos.map(x=>parseInt(x.id)||0))+1;
+if(residuos.length) nextResiduoId = Math.max(...residuos.map(x=>parseInt(x.id)||0))+1;
+if(unidades.length) nextUnidadId = Math.max(...unidades.map(x=>parseInt(x.id)||0))+1;
     if(clientes.length) nextId = Math.max(...clientes.map(x=>parseInt(x.id)||0))+1;
     if(retiros.length) nextRetiroId = Math.max(...retiros.map(x=>parseInt(x.id)||0))+1;
     if(camiones.length) nextCamionId = Math.max(...camiones.map(x=>parseInt(x.id)||0))+1;
