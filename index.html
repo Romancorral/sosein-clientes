@@ -1664,6 +1664,8 @@ const RESIDUOS_MAP = {
 
 function buscarResiduo(tipo) {
   const key = tipo.toLowerCase().trim();
+  const fromDB = residuos.find(x=>x.nombre&&x.nombre.toLowerCase().trim()===key);
+  if(fromDB&&fromDB.tratamiento) return {tratamiento:fromDB.tratamiento,pct:fromDB.pct||'',color:'high'};
   if(RESIDUOS_MAP[key]) return RESIDUOS_MAP[key];
   for(const k of Object.keys(RESIDUOS_MAP)){
     if(key.includes(k)||k.includes(key)) return RESIDUOS_MAP[k];
