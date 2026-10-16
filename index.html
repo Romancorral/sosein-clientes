@@ -1478,14 +1478,18 @@ function renderDestinos(){
 async function agregarResiduo(){
   const nombre=document.getElementById("res-nombre").value.trim();
   const estado=document.getElementById("res-estado").value;
+  const tratamiento=document.getElementById("res-tratamiento").value.trim();
+  const pct=document.getElementById("res-pct").value.trim();
   if(!nombre){alert("Ingresa el nombre del residuo.");return;}
   const btn=document.getElementById("btn-agregar-res");
   btn.disabled=true;
   try{
-    const res={id:nextResiduoId++,nombre,estado};
+    const res={id:nextResiduoId++,nombre,estado,tratamiento,pct};
     await apiPost({action:'saveResiduo',...res});
     residuos.push(res);
     document.getElementById("res-nombre").value="";
+    document.getElementById("res-tratamiento").value="";
+    document.getElementById("res-pct").value="";
     showMsg("msg-residuo");renderResiduos();actualizarTiposResiduo();
   }catch(e){alert("Error al guardar.");}
   btn.disabled=false;
