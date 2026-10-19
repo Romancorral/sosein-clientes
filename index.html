@@ -836,7 +836,7 @@ async function guardarRetiro(){
     document.getElementById("r-destino-solidos").value="";
     document.getElementById("r-destino-liquidos").value="";
     document.getElementById("r-notas").value="";
-   document.getElementById("r-camion-solidos").value="";document.getElementById("r-chofer-solidos").value="";document.getElementById("r-camion-liquidos").value="";document.getElementById("r-chofer-liquidos").value="";document.getElementById("r-encargado").value="";document.getElementById("r-encargado-solidos").value="";document.getElementById("r-encargado-liquidos").value="";
+   document.getElementById("r-camion-solidos").value="";document.getElementById("r-chofer-solidos").value="";document.getElementById("r-camion-liquidos").value="";document.getElementById("r-chofer-liquidos").value="";document.getElementById("r-encargado").value="";
     showMsg("msg-retiro");renderRetiros();renderPanel();
   }catch(e){showMsg("err-retiro");}
   btn.disabled=false;btn.innerHTML='Guardar retiro';
