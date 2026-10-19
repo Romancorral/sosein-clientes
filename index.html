@@ -824,13 +824,15 @@ async function guardarRetiro(){
   const camionLiquidos=document.getElementById("r-camion-liquidos").value;
   const choferLiquidos=document.getElementById("r-chofer-liquidos").value;
   const encargadoGenerador=document.getElementById("r-encargado").value.trim();
+  const encargadoSolidos=document.getElementById("r-encargado-solidos").value.trim();
+  const encargadoLiquidos=document.getElementById("r-encargado-liquidos").value.trim();
   const folio=nextFolio++;
   if(!clienteId||!fecha||(!destinoSolidos&&!destinoLiquidos)){alert("Selecciona cliente, fecha y al menos un destino.");return;}
   if(!itemsActuales.length){alert("Agrega al menos un residuo.");return;}
   const btn=document.getElementById("btn-guardar-retiro");
   btn.disabled=true;btn.innerHTML='<span class="spinner"></span>Guardando...';
   try{
-    const retiro={id:nextRetiroId++,clienteId,fecha,items:[...itemsActuales],destinoSolidos,destinoLiquidos,notas,camionSolidos,choferSolidos,camionLiquidos,choferLiquidos,encargadoGenerador,folio};
+    const retiro={id:nextRetiroId++,clienteId,fecha,items:[...itemsActuales],destinoSolidos,destinoLiquidos,notas,camionSolidos,choferSolidos,camionLiquidos,choferLiquidos,encargadoGenerador,encargadoSolidos,encargadoLiquidos,folio};
     await apiPost({action:'saveRetiro',...retiro});
     retiros.push(retiro);itemsActuales=[];renderItemsActuales();
     document.getElementById("r-cliente").value="";
