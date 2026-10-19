@@ -1820,7 +1820,9 @@ async function generarActa(id){
       choferLiquidos:r.choferLiquidos||'—',
       destinoSolidos:r.destinoSolidos||'—',
       destinoLiquidos:r.destinoLiquidos||'—',
-      encargadoGenerador:r.encargadoGenerador||'—'
+      encargadoGenerador:r.encargadoGenerador||'—',
+encargadoSolidos:r.encargadoSolidos||'—',
+encargadoLiquidos:r.encargadoLiquidos||'—'
     };
     const res = await apiPost(actaData);
     if(res.url) r.actaUrl = res.url;
