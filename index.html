@@ -1822,8 +1822,6 @@ async function generarActa(id){
       rutDestinoSolidos:(destinos.find(x=>x.nombre===r.destinoSolidos)||{}).rut||'',
       rutDestinoLiquidos:(destinos.find(x=>x.nombre===r.destinoLiquidos)||{}).rut||'',
       encargadoGenerador:r.encargadoGenerador||'—',
-encargadoSolidos:r.encargadoSolidos||'—',
-encargadoLiquidos:r.encargadoLiquidos||'—'
     };
     const res = await apiPost(actaData);
     if(res.url) r.actaUrl = res.url;
