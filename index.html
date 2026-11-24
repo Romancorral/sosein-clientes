@@ -1129,16 +1129,12 @@ async function guardarMantencion() {
   const km       = document.getElementById('mant-km').value;
   const costo    = document.getElementById('mant-costo').value;
   if (!fecha || !desc) { alert('Completa fecha y descripción.'); return; }
-  const btn = document.querySelector('#modal-mantencion button[onclick="guardarMantencion()"]');
-  btn.disabled = true; btn.textContent = 'Guardando...';
   try {
     await apiPost({ action:'saveMantencion', camionId, fecha, tipo, descripcion:desc, kmAlMomento:km, costo });
-    const data = await apiPost({ action:'getMantenciones' });
-    if (data.mantenciones) mantenciones = data.mantenciones;
-    cerrarModalMantencion();
-    showMsg('msg-flota');
-    } catch(e) { console.log('updateCamion:', e); }
-  btn.disabled = false; btn.textContent = 'Guardar';
+  } catch(e) { console.log(e); }
+  cerrarModalMantencion();
+  await cargarDatos();
+  showMsg('msg-camion');
 }
 
 // === CONFIGURAR CAMIÓN ===
