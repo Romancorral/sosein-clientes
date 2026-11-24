@@ -299,7 +299,108 @@ tr:hover td{background:#fafaf8;}
       </div>
     </div>
     <div class="card"><table><thead><tr><th style="width:70%;">Nombre</th><th style="width:30%;">Acción</th></tr></thead><tbody id="relatores-tbody"><tr><td colspan="2" class="loading">Cargando...</td></tr></tbody></table></div>
+    <!-- MODAL: HISTORIAL MANTENCIONES -->
+<div id="modal-historial" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1000;overflow-y:auto;">
+  <div style="background:#fff;border-radius:12px;max-width:700px;margin:40px auto;padding:28px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+      <h3 style="margin:0;font-size:18px;color:#1a4a6b;" id="historial-titulo">Historial</h3>
+      <button onclick="cerrarModalHistorial()" style="background:none;border:none;font-size:20px;cursor:pointer;color:#666;">✕</button>
     </div>
+    <div style="overflow-x:auto;">
+      <table style="width:100%;border-collapse:collapse;font-size:13px;">
+        <thead>
+          <tr style="background:#f1f5f9;">
+            <th style="padding:8px 10px;text-align:left;border-bottom:1px solid #e2e8f0;">Fecha</th>
+            <th style="padding:8px 10px;text-align:left;border-bottom:1px solid #e2e8f0;">Tipo</th>
+            <th style="padding:8px 10px;text-align:left;border-bottom:1px solid #e2e8f0;">Descripción</th>
+            <th style="padding:8px 10px;text-align:right;border-bottom:1px solid #e2e8f0;">Km</th>
+            <th style="padding:8px 10px;text-align:right;border-bottom:1px solid #e2e8f0;">Costo</th>
+          </tr>
+        </thead>
+        <tbody id="historial-body"></tbody>
+      </table>
+      <p id="historial-vacio" style="text-align:center;color:#888;padding:20px;display:none;">Sin registros aún.</p>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: REGISTRAR MANTENCIÓN -->
+<div id="modal-mantencion" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1000;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:12px;max-width:480px;width:90%;padding:28px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+      <h3 style="margin:0;font-size:18px;color:#1a4a6b;">Registrar mantención</h3>
+      <button onclick="cerrarModalMantencion()" style="background:none;border:none;font-size:20px;cursor:pointer;color:#666;">✕</button>
+    </div>
+    <input type="hidden" id="mant-camion-id">
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <div>
+        <label style="font-size:12px;color:#555;display:block;margin-bottom:4px;">Fecha</label>
+        <input type="date" id="mant-fecha" style="width:100%;padding:8px 10px;border:1px solid #d1d5db;border-radius:6px;font-size:13px;box-sizing:border-box;">
+      </div>
+      <div>
+        <label style="font-size:12px;color:#555;display:block;margin-bottom:4px;">Tipo</label>
+        <select id="mant-tipo" style="width:100%;padding:8px 10px;border:1px solid #d1d5db;border-radius:6px;font-size:13px;box-sizing:border-box;">
+          <option value="Mantención">Mantención</option>
+          <option value="Reparación">Reparación</option>
+          <option value="Mejora">Mejora</option>
+        </select>
+      </div>
+      <div>
+        <label style="font-size:12px;color:#555;display:block;margin-bottom:4px;">Descripción</label>
+        <textarea id="mant-descripcion" rows="3" style="width:100%;padding:8px 10px;border:1px solid #d1d5db;border-radius:6px;font-size:13px;box-sizing:border-box;resize:vertical;"></textarea>
+      </div>
+      <div style="display:flex;gap:12px;">
+        <div style="flex:1;">
+          <label style="font-size:12px;color:#555;display:block;margin-bottom:4px;">Km al momento</label>
+          <input type="number" id="mant-km" style="width:100%;padding:8px 10px;border:1px solid #d1d5db;border-radius:6px;font-size:13px;box-sizing:border-box;" placeholder="0">
+        </div>
+        <div style="flex:1;">
+          <label style="font-size:12px;color:#555;display:block;margin-bottom:4px;">Costo ($)</label>
+          <input type="number" id="mant-costo" style="width:100%;padding:8px 10px;border:1px solid #d1d5db;border-radius:6px;font-size:13px;box-sizing:border-box;" placeholder="0">
+        </div>
+      </div>
+      <button onclick="guardarMantencion()" style="background:#1a4a6b;color:#fff;border:none;padding:10px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: CONFIGURAR CAMIÓN -->
+<div id="modal-config-camion" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:1000;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:12px;max-width:480px;width:90%;padding:28px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+      <h3 style="margin:0;font-size:18px;color:#1a4a6b;">Configurar camión</h3>
+      <button onclick="cerrarModalConfigCamion()" style="background:none;border:none;font-size:20px;cursor:pointer;color:#666;">✕</button>
+    </div>
+    <input type="hidden" id="config-camion-id">
+    <div style="display:flex;flex-direction:column;gap:14px;">
+      <div>
+        <label style="font-size:12px;color:#555;display:block;margin-bottom:4px;">Nombre / Descripción</label>
+        <input type="text" id="config-nombre" style="width:100%;padding:8px 10px;border:1px solid #d1d5db;border-radius:6px;font-size:13px;box-sizing:border-box;">
+      </div>
+      <div>
+        <label style="font-size:12px;color:#555;display:block;margin-bottom:4px;">Patente</label>
+        <input type="text" id="config-patente" style="width:100%;padding:8px 10px;border:1px solid #d1d5db;border-radius:6px;font-size:13px;box-sizing:border-box;">
+      </div>
+      <div>
+        <label style="font-size:12px;color:#555;display:block;margin-bottom:4px;">Tipo</label>
+        <select id="config-tipo" style="width:100%;padding:8px 10px;border:1px solid #d1d5db;border-radius:6px;font-size:13px;box-sizing:border-box;">
+          <option value="solidos">Sólidos</option>
+          <option value="liquidos">Líquidos</option>
+        </select>
+      </div>
+      <div>
+        <label style="font-size:12px;color:#555;display:block;margin-bottom:4px;">Odómetro actual (km)</label>
+        <input type="number" id="config-odometro" style="width:100%;padding:8px 10px;border:1px solid #d1d5db;border-radius:6px;font-size:13px;box-sizing:border-box;">
+      </div>
+      <div>
+        <label style="font-size:12px;color:#555;display:block;margin-bottom:4px;">Próxima mantención (km)</label>
+        <input type="number" id="config-prox-mant" style="width:100%;padding:8px 10px;border:1px solid #d1d5db;border-radius:6px;font-size:13px;box-sizing:border-box;">
+      </div>
+      <button onclick="guardarConfigCamion()" style="background:#1a4a6b;color:#fff;border:none;padding:10px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;">Guardar cambios</button>
+    </div>
+  </div>
+</div>
+  </div>
 
 <!-- CONFIGURACIÓN -->
 <div id="tab-config" class="section">
