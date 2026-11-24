@@ -1071,11 +1071,111 @@ function abrirModal(id){
   const c=camiones.find(x=>String(x.id)===String(id));
   document.getElementById('modal-km-title').textContent=`Actualizar — ${c.patente}`;
   document.getElementById('modal-km-input').value=c.kmActual||'';
-  document.getElementById('modal-mantencion').value='no';
+  document.getElementById('modal-km-mantencion').value='no';
   document.getElementById('modal-km').classList.add('open');
 }
 function cerrarModal(){document.getElementById('modal-km').classList.remove('open');camionSeleccionado=null;}
+// === HISTORIAL MANTENCIONES ===
+function abrirModalHistorial(camionId) {
+  const c = camiones.find(x => String(x.id) === String(camionId));
+  document.getElementById('historial-titulo').textContent = 'Historial — ' + (c ? c.patente : camionId);
+  const body = document.getElementById('historial-body');
+  const vacio = document.getElementById('historial-vacio');
+  const registros = (mantenciones || []).filter(m => String(m.camionId) === String(camionId));
+  registros.sort((a, b) => (b.fecha || '').localeCompare(a.fecha || ''));
+  body.innerHTML = '';
+  if (registros.length === 0) {
+    vacio.style.display = 'block';
+  } else {
+    vacio.style.display = 'none';
+    registros.forEach(m => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td style="padding:8px 10px;border-bottom:1px solid #f1f5f9;">${m.fecha||'—'}</td>
+        <td style="padding:8px 10px;border-bottom:1px solid #f1f5f9;"><span style="background:${m.tipo==='Mantención'?'#dbeafe':m.tipo==='Reparación'?'#fee2e2':'#dcfce7'};color:${m.tipo==='Mantención'?'#1e40af':m.tipo==='Reparación'?'#991b1b':'#166534'};padding:2px 8px;border-radius:12px;font-size:11px;font-weight:600;">${m.tipo||'—'}</span></td>
+        <td style="padding:8px 10px;border-bottom:1px solid #f1f5f9;">${m.descripcion||'—'}</td>
+        <td style="padding:8px 10px;border-bottom:1px solid #f1f5f9;text-align:right;">${m.kmAlMomento?Number(m.kmAlMomento).toLocaleString('es-CL'):'—'}</td>
+        <td style="padding:8px 10px;border-bottom:1px solid #f1f5f9;text-align:right;">${m.costo?'$'+Number(m.costo).toLocaleString('es-CL'):'—'}</td>
+      `;
+      body.appendChild(tr);
+    });
+  }
+  document.getElementById('modal-historial').style.display = 'block';
+}
+function cerrarModalHistorial() {
+  document.getElementById('modal-historial').style.display = 'none';
+}
 
+// === REGISTRAR MANTENCIÓN ===
+function abrirModalMantencion(camionId) {
+  const c = camiones.find(x => String(x.id) === String(camionId));
+  document.getElementById('mant-camion-id').value = camionId;
+  document.getElementById('mant-fecha').value = new Date().toISOString().split('T')[0];
+  document.getElementById('mant-tipo').value = 'Mantención';
+  document.getElementById('mant-descripcion').value = '';
+  document.getElementById('mant-km').value = c ? (c.kmActual||'') : '';
+  document.getElementById('mant-costo').value = '';
+  document.getElementById('modal-mantencion').style.display = 'flex';
+}
+function cerrarModalMantencion() {
+  document.getElementById('modal-mantencion').style.display = 'none';
+}
+async function guardarMantencion() {
+  const camionId = document.getElementById('mant-camion-id').value;
+  const fecha    = document.getElementById('mant-fecha').value;
+  const tipo     = document.getElementById('mant-tipo').value;
+  const desc     = document.getElementById('mant-descripcion').value.trim();
+  const km       = document.getElementById('mant-km').value;
+  const costo    = document.getElementById('mant-costo').value;
+  if (!fecha || !desc) { alert('Completa fecha y descripción.'); return; }
+  const btn = document.querySelector('#modal-mantencion button[onclick="guardarMantencion()"]');
+  btn.disabled = true; btn.textContent = 'Guardando...';
+  try {
+    await apiPost({ action:'saveMantencion', camionId, fecha, tipo, descripcion:desc, kmAlMomento:km, costo });
+    const data = await apiPost({ action:'getMantenciones' });
+    if (data.mantenciones) mantenciones = data.mantenciones;
+    cerrarModalMantencion();
+    showMsg('msg-flota');
+  } catch(e) { alert('Error al guardar.'); }
+  btn.disabled = false; btn.textContent = 'Guardar';
+}
+
+// === CONFIGURAR CAMIÓN ===
+function abrirModalConfigCamion(camionId) {
+  const c = camiones.find(x => String(x.id) === String(camionId));
+  if (!c) return;
+  document.getElementById('config-camion-id').value = camionId;
+  document.getElementById('config-nombre').value    = c.nombre||c.marca+' '+c.modelo||'';
+  document.getElementById('config-patente').value   = c.patente||'';
+  document.getElementById('config-tipo').value      = c.tipo||'solidos';
+  document.getElementById('config-odometro').value  = c.kmActual||'';
+  document.getElementById('config-prox-mant').value = c.kmProxima||'';
+  document.getElementById('modal-config-camion').style.display = 'flex';
+}
+function cerrarModalConfigCamion() {
+  document.getElementById('modal-config-camion').style.display = 'none';
+}
+async function guardarConfigCamion() {
+  const id       = document.getElementById('config-camion-id').value;
+  const nombre   = document.getElementById('config-nombre').value.trim();
+  const patente  = document.getElementById('config-patente').value.trim();
+  const tipo     = document.getElementById('config-tipo').value;
+  const odometro = document.getElementById('config-odometro').value;
+  const proxMant = document.getElementById('config-prox-mant').value;
+  if (!nombre) { alert('El nombre es obligatorio.'); return; }
+  const btn = document.querySelector('#modal-config-camion button[onclick="guardarConfigCamion()"]');
+  btn.disabled = true; btn.textContent = 'Guardando...';
+  try {
+    await apiPost({ action:'updateCamion', id, nombre, patente, tipo, odometro, proxMant });
+    const data = await apiPost({ action:'getAllData' });
+    if (data.camiones) camiones = data.camiones;
+    cerrarModalConfigCamion();
+    renderFlota();
+    showMsg('msg-flota');
+  } catch(e) { alert('Error al guardar.'); }
+  btn.disabled = false; btn.textContent = 'Guardar cambios';
+}
+  
 async function guardarKm(){
   const km=parseInt(document.getElementById('modal-km-input').value);
   const mantencion=document.getElementById('modal-mantencion').value;
