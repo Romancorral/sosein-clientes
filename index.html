@@ -1167,11 +1167,11 @@ async function guardarConfigCamion() {
   btn.disabled = true; btn.textContent = 'Guardando...';
   try {
     await apiPost({ action:'updateCamion', id, nombre, patente, tipo, odometro, proxMant });
-    cerrarModalConfigCamion();
-    await cargarDatos();
-    showMsg('msg-flota');
-  } catch(e) { alert('Error al guardar.'); }
+  } catch(e) { console.log(e); }
+  cerrarModalConfigCamion();
   btn.disabled = false; btn.textContent = 'Guardar cambios';
+  await cargarDatos();
+  showMsg('msg-flota');
 }
   
 async function guardarKm(){
