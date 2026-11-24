@@ -1163,15 +1163,12 @@ async function guardarConfigCamion() {
   const tipo     = document.getElementById('config-tipo').value;
   const odometro = document.getElementById('config-odometro').value;
   const proxMant = document.getElementById('config-prox-mant').value;
-  if (!nombre) { alert('El nombre es obligatorio.'); return; }
   const btn = document.querySelector('#modal-config-camion button[onclick="guardarConfigCamion()"]');
   btn.disabled = true; btn.textContent = 'Guardando...';
   try {
     await apiPost({ action:'updateCamion', id, nombre, patente, tipo, odometro, proxMant });
-    const data = await apiPost({ action:'getAllData' });
-    if (data.camiones) camiones = data.camiones;
     cerrarModalConfigCamion();
-    renderFlota();
+    await cargarDatos();
     showMsg('msg-flota');
   } catch(e) { alert('Error al guardar.'); }
   btn.disabled = false; btn.textContent = 'Guardar cambios';
