@@ -1728,6 +1728,8 @@ async function generarCertificado() {
       clienteRut:c?c.rut:'—',
       clienteDireccion:c?c.direccion:'—',
       destino:r.destino,
+      destinoSolidos:r.destinoSolidos||'',
+      destinoLiquidos:r.destinoLiquidos||'',
       clienteId:r.clienteId||'',
       items:residuosData,
     });
