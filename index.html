@@ -1179,7 +1179,7 @@ async function guardarConfigCamion() {
   
 async function guardarKm(){
   const km=parseInt(document.getElementById('modal-km-input').value);
-  const mantencion=document.getElementById('modal-mantencion').value;
+  const mantencion=document.getElementById('modal-km-mantencion').value;
   if(!km||km<=0){alert('Ingresa los kilómetros actuales.');return;}
   const c=camiones.find(x=>String(x.id)===String(camionSeleccionado));
   c.kmActual=km;c.enReparacion=false;
