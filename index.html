@@ -1129,8 +1129,13 @@ async function guardarMantencion() {
   const km       = document.getElementById('mant-km').value;
   const costo    = document.getElementById('mant-costo').value;
   if (!fecha || !desc) { alert('Completa fecha y descripción.'); return; }
+  const c = camiones.find(x => String(x.id) === String(camionId));
   try {
     await apiPost({ action:'saveMantencion', camionId, fecha, tipo, descripcion:desc, kmAlMomento:km, costo });
+    if (km && c) {
+      const proxMant = c.intervalo ? String(parseInt(km) + parseInt(c.intervalo)) : c.kmProxima;
+      await apiPost({ action:'updateCamion', id:camionId, patente:c.patente, odometro:km, proxMant });
+    }
   } catch(e) { console.log(e); }
   cerrarModalMantencion();
   await cargarDatos();
