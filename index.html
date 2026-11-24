@@ -1137,7 +1137,7 @@ async function guardarMantencion() {
     if (data.mantenciones) mantenciones = data.mantenciones;
     cerrarModalMantencion();
     showMsg('msg-flota');
-  } catch(e) { alert('Error al guardar.'); }
+    } catch(e) { console.log('updateCamion:', e); }
   btn.disabled = false; btn.textContent = 'Guardar';
 }
 
